@@ -1,0 +1,3469 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Formation PostgreSQL / PostGIS</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="_assets/assets/makina-theme/makina-formation.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section ><section data-markdown><script type="text/template">
+
+<!-- .slide: class="title logo" data-background="#b5b42c" -->
+
+# PostgreSQL / PostGIS
+
+<!-- formateur@makina-corpus.com -->
+
+![](assets/images/postgis-logo.png)
+
+
+
+</script></section><section data-markdown><script type="text/template">
+
+<!-- .slide: class="title logo" data-background="#b5b42c" -->
+
+# Makina Corpus
+
+* Société de Services en Logiciels Libres (SSLL)
+* Développement d’applications web et mobile
+(application métier, front-end, cartographie, CMS, mobile, data)
+* Audits
+* Formation
+* Présente notamment à Toulouse et Nantes
+
+
+</script></section></section><section  data-markdown><script type="text/template">## Objectifs de la formation
+
+<img src="assets/images/objectifs.png" width="200">
+
+- Étendre les fonctionnalités d'une base de données
+- Concevoir une base de données spatiale
+- Exploiter une base de données spatiale
+- Installer et administrer une base de données spatiale
+
+
+</script></section><section ><section data-markdown><script type="text/template">## Organisation
+- 3 jours
+- Horaires : 9h00 - 12h30 / 13h30 - 17h00
+
+<iframe src="https://giphy.com/embed/d3yxg15kJppJilnW" width="200" height="200" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/time-clock-konczakowski-d3yxg15kJppJilnW"></a></p>
+
+</script></section><section data-markdown><script type="text/template">
+
+### Fonctionnement de la formation
+#### Alternance de :
+- Présentations théoriques et discussions autour de problématiques
+métier
+- Mises en pratique
+- Travaux coopératifs ou individuels
+
+</script></section><section data-markdown><script type="text/template">
+
+### Cadre pour ces 3 jours
+- Confiance et confidentialité.
+- Libre verbalisation, confrontation positive.
+- Corresponsabilité dans l'atteinte des objectifs.
+- Ponctualité, assiduité et téléphones silencieux.
+
+Programme souple, posez des questions, exprimez-vous !
+
+¯\\_(ツ)_/¯
+</script></section></section><section ><section data-markdown><script type="text/template">## Programme
+
+### 1er jour
+- Présentation de l'architecture PostgreSQL
+- Présentation des clients PostgreSQL
+- Installation de PostGIS
+- Exploitation de la dimension spatiale
+
+</script></section><section data-markdown><script type="text/template">
+
+### 2ème jour
+- Conception d'une base de données
+- Manipulation d'enregistrements en SQL
+- Entretien d'une base de données
+- Manipulation de données raster
+
+</script></section><section data-markdown><script type="text/template">
+
+### 3ème jour
+- Gestion de la topologie et routing
+- Administration d'une base de données
+- Notions SQL avancées
+</script></section></section><section ><section data-markdown><script type="text/template">## Qu'est ce qu'une base de données ?
+
+<img src="assets/images/database.png" width="200">
+
+Ensemble qui va permettre de stocker des données.
+
+- Les données
+- Le SGBD
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Structure des données
+
+- Banque de données
+- Bases de données
+- Tables
+- Enregistrements
+
+</script></section><section data-markdown><script type="text/template">
+
+### Eléments du SGBD
+
+- Le moteur SQL va réaliser toutes les manipulations sur les fichiers de données
+- Le catalogue va contenir la description de la bdd et les informations des utilisateurs
+- Le langage de requêtes (le SQL)
+- Le processeur de requêtes (commande pour le moteur SQL)
+
+</script></section><section data-markdown><script type="text/template">
+
+
+## Un mot sur le SQL
+
+### Structured Query Langage
+
+- Langage permettant de communiquer avec une base de données
+- Commandes proches du langage naturel
+- Quelque soit le SGBD utilisé (PostgreSQL, Oracle, MySQL..), on retrouvera la même syntaxe.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Quatres grandes parties
+
+- Langage de manipulation de données (LMD):
+	- __INSERT__ (ajout de ligne)
+	- __UPDATE__ (mise à jour de ligne)
+	- __DELETE__ (suppression de ligne)
+	- __SELECT__ (consultation de données)
+
+- Langage de controle de données (LCD):
+	- __GRANT__ (affectation, des droits)
+	- __REVOKE__ (suppression des droits)
+
+- Langage de définition de données (LDD) :
+	- __CREATE__ (création d'objet)
+	- __ALTER__ (modification d'objet)
+	- __DROP__ (destruction d'objet)
+
+</script></section><section data-markdown><script type="text/template">
+#### Quatres grandes parties (suite)
+
+- Langage de controle de transaction (LCT) :
+	- __COMMIT__ (validation de modification de bdd)
+	- __ROLLBACK__ (annulation de modification de bdd)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Comment se lit une requête SQL?
+
+**SELECT​** est une commande SQL qui permet d'extraire des données provenant des tables ou des vues d'une base de données relationnelle.
+
+</script></section><section data-markdown><script type="text/template">
+Une commande **SELECT**  a généralement cette syntaxe là :
+
+```sql
+SELECT attributs
+FROM tables
+WHERE conditions -- optionnelle
+GROUP BY attributs -- optionnelle
+HAVING conditions -- optionnelle
+ORDER BY attributs -- optionnelle
+LIMIT nombre -- optionnelle
+```
+
+et se lit
+
+```sql
+FROM tables
+WHERE conditions -- optionnelle
+SELECT attributs
+GROUP BY attributs -- optionnelle
+HAVING conditions -- optionnelle
+ORDER BY attributs -- optionnelle
+LIMIT nombre -- optionnelle
+```
+</script></section><section data-markdown><script type="text/template">
+
+- La partie ```SELECT``` indique les colonnes et expressions qui seront extraites. *Les colonnes listées dans le __SELECT__ doivent appartenir aux tables/vues/sous-requêtes listées dans le __FROM__.*
+- La partie ```FROM``` décrit les tables/vues/sous-requêtes qui serviront de sources de données.
+- La partie ```WHERE``` (*optionnelle*) exprime les conditions de sélection des enregistrements.
+- La partie ```GROUP BY``` (*optionnelle*) permet, via les noms des colonnes et expressions, de grouper les résultats (agrégats). ​
+
+</script></section><section data-markdown><script type="text/template">
+
+
+- La partie ```HAVING``` (*optionnelle*) exprime les conditions de sélection sur des résultats aggrégés. Il se différencie du ```WHERE``` par le fait que le __WHERE__ est utilisé avant le __GROUP BY__ et que le ```HAVING``` est utilisé après aggrégation par le __GROUP BY__.
+- La partie ```ORDER BY``` permet de trier les résultats par ordre croissant (par défaut) ou décroissant (```DESC```)
+- La partie ```LIMIT``` permet de restreindre le nombre de résultats
+
+👉 Pour des exemples, se rendre sur la page [Wikipedia](https://fr.wikipedia.org/wiki/Select_(SQL))
+
+
+
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## PostgreSQL
+
+<img src="assets/images/postgresql_logo.png" width="300">
+</script></section><section data-markdown><script type="text/template">
+### Historique
+
+- PostgreSQL est un Système de Gestion de Bases de Données (SGBD) de type relationnel.
+ - Relationnel : structure _carrée_ telle que celle d'un tableur (ligne, colonnes)
+- Évolution de Ingres, démarré en 1977.
+- Début du développement en 1985 à l'université de Berkeley par Michael Stonebraker
+- Libre et open source
+- Le nom PostgreSQL apparait en 1995
+- Projet repris en Open Source par une communauté de développeurs
+ supportée par de nombreuses entreprises.
+- Dernière version : 13
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Cas d'utilisation
+
+- PostgreSQL est généralement utilisé comme couche de persistance
+ dans des applications métiers où :
+    - le volume de données est important (jusqu'à plusieurs téraoctets),
+    - l'intégrité des données est un impératif majeur,
+    - la charge envisagée est importante,
+    - les requêtes sont complexes.
+
+👉 Le site de la communauté [PostgreSQL-fr](https://www.postgresql.fr/) liste différents
+ témoignages.
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Atouts
+
+- Stockage d'information plus structurée qu'avec une arborescence de fichiers SHP
+- Robuste
+- Gère des gros volumes de données (PCI, référentiels..)
+- Gestion des relations entre données géographiques et données attributaires
+- Permet de développer des applications métiers
+- Gestion fine des droits d'accès
+- Fonctionne sur les principaux systèmes d'exploitation
+
+</script></section><section data-markdown><script type="text/template">
+
+### Atouts
+
+- Supporte de nombreux langages (Java, Python, Perl, Json, Ruby, C++)
+- Contrôle d'accès simultané (modèle MVCC)
+- Contraintes d'intégrité
+- Extensible (par exemple : PostGIS)
+- Modèle client/serveur et multi-utilisateurs
+- Conforme au standard SQL, augmenté de syntaxes spécifiques
+- Bon binôme avec Qgis
+- Supporté par une communauté large et active
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Points faibles
+
+- Nécessite des compétences en administration système :
+ - Installation, configuration, sauvegardes/restaurations
+- Vigilance sur le long terme sur la performance (autovacuum, index, espace disque)
+
+ </script></section><section data-markdown><script type="text/template">
+
+### Ce qu'apporte la dernière version de Postgres
+
+<img src="assets/images/postgres12.png" width="300">
+
+#### Amélioration de la performance
+- Réduction de l'espace utilisé par les index
+- Système de tri incrémental (réutilisation des précédents tris de résultats)
+- Mécanisme d'agrégation par hachage (utilisation d'une clé au lieu des données complètes)
+
+#### Amélioration sur la maintenance
+- Parallélisation du _VACUUM_ sur les index
+- Plans d'exécutions plus détaillés
+
+#### Amélioration de la sécurité
+- Extensions de confiance activables par utilisateurs classiques
+
+👉 Voir cet [article](https://blog.dalibo.com/2020/09/25/release_postgresql_13.html) pour plus de détails
+
+
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## PostGIS
+
+
+![](assets/images/postgis-logo.png)
+</script></section><section data-markdown><script type="text/template">
+
+### Présentation
+
+- PostGIS est l'extension spatiale de PostgreSQL.
+- Elle y intègre :
+  - des types de données pour représenter de l'information géo-localisée: geometry / geography
+  - un ensemble de fonctions et opérateurs pour manipuler ces informations géo-localisées.
+- PostGIS est apparu en 2001 au sein de la société canadienne Refractions.
+- PostGIS implémente les normes OGC Simple Feature (SQL/MM)
+- Dernière version : 3.1.1
+
+</script></section><section data-markdown><script type="text/template">
+
+### Caractéristiques
+
+- PostGIS fournit plus de 1000 objets pour l'analyse spatiale vectorielle
+ : types, opérateurs, fonctions.
+- Ces objets forment le vocabulaire pour poser des questions spatiales
+ à PostgreSQL.
+- Comme PostgreSQL, PostGIS peut être utilisé dans des environnements
+ très variés : Web, serveur local, applications bureautiques, etc...
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Ce qu'apporte la dernière version de PostGIS
+
+- Génération de grilles carrés ou hexagonales
+- Amélioration de la performance de diverses fonctions (TopoJSON, ST_AsMVT)
+</script></section></section><section ><section data-markdown><script type="text/template">## L'univers des moteurs SQL
+<img src="assets/images/moteurssql.jpeg" >
+
+</script></section><section data-markdown><script type="text/template">
+<img src="assets/images/MySQL.png" width="200">
+<img src="assets/images/mariadb.jpg" width="200">
+
+### PostgreSQL vs. MySQL / MariaDB
+
+
+- MySQL et MariaDB (alternative open source) sont conçus pour le Web : requêtes simples, temps de réponse
+ minimaux.
+- Support limité des contraintes d'intégrité.
+- MySQL/MariaDB s'occupent très bien des petits jeux de données avec un faible nombre d'utilisateurs
+- Possède moins de fonctionnalités que Postgres
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/msaccess.png" width="200">
+
+### PostgreSQL vs. MS Access
+
+- MS Access permet de construire des applications métiers simples avec
+ relativement peu de compétences en informatique.
+- MS Access n'est pas un serveur.
+- Gestion de bases de faible taille (500 mo)
+- Gestion rudimentaire des utilisateurs et des droits.
+- Support limité du SQL, interfaces non standards, portabilité
+ limitée.
+- Pas d'extension spatiale.
+- Plutôt destiné à des applications mono-postes.
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/oracle.png" width="200">
+
+### PostgreSQL vs. Oracle
+
+- PostgreSQL est généralement présenté comme l'équivalent Libre
+ d'Oracle.
+- Bien avant les détails techniques, il s'agit d'un choix entre une
+ solution Libre et une solution propriétaire.
+- Support garanti ? Support communautaire ?
+- Postgres reste facilement administrable, là où Oracle requiert un spécialiste et représente un coût supplémentaire
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/SQLite.png" width="200">
+
+### PostgreSQL vs. SQLite3
+
+- [SpatiaLite](https://www.gaia-gis.it/fossil/libspatialite/index) est l'extension spatiale de SQLite.
+- Extrêmement léger et facile à mettre en œuvre.
+- Spatialite n'est pas un serveur.
+- Base stockée dans un fichier facilement duplicable, déplacable.
+- Respect des standards (SQL et Simple Feature).
+- Communauté dynamique pour SQLite mais embryonnaire pour Spatialite.
+- Pas de gestion d'utilisateurs.
+</script></section></section><section ><section data-markdown><script type="text/template">## Architecture logicielle
+
+### Client / Serveur
+
+- PostgreSQL est un serveur.
+- C'est un programme qui ne possède pas d'interface homme-machine, il
+ écoute/attend seulement les requêtes envoyées par d'autres
+ programmes : les clients.
+- Le client se connecte au serveur en spécifiant :
+    - le nom d'hôte et éventuellement son domaine,
+    - le port (par défaut 5432),
+    - un nom d'utilisateur et éventuellement un mot de passe.
+
+</script></section><section data-markdown><script type="text/template">
+
+![](assets/images/architecture.jpg)
+
+</script></section><section data-markdown><script type="text/template">
+
+### Architecture
+
+**Un serveur local ou distant s'appelle une `instance`**
+
+<img src="assets/images/architecture_postgres.png" width="1500">
+#instance #port #cluster #bdd #schema #table #vue #role
+
+</script></section><section data-markdown><script type="text/template">
+
+### Architecture
+
+#### Focus
+
+<table><tr>
+<td> <img src="assets/images/login_pg.png" alt="Rôles" style="width: 200px;"/> </td>
+<td> <img src="assets/images/database_pg.png" alt="Base de données" style="width: 400px;"/> </td>
+</tr></table>
+</script></section><section data-markdown><script type="text/template"></script></section></section><section ><section data-markdown><script type="text/template">## Outils
+
+### Clients
+
+- Les bibliothèques clientes permettent de communiquer avec le serveur en utilisant un langage de programmation.
+- Des applications clientes sont bâties grâce à ces bibliothèques.
+
+</script></section><section data-markdown><script type="text/template">
+
+|Principaux outils clients| Description |
+|----------|:-------------:|
+| [psql](https://docs.postgresql.fr/8.2/app-psql.html) |Interface en ligne de commande permettant la saisie de requêtes SQL|
+|[pgadmin4](https://www.pgadmin.org/) |Outil d'administration graphique pour PostgreSQL|
+| [PhpPgAdmin](http://phppgadmin.sourceforge.net/doku.php)|interface web d'administration pour PostgreSQL.|
+| [HeiSQL](https://www.heidisql.com/download.php)|Client SQL pour Windows qui supporte les principaux moteurs de bases de données|
+| [DBeaver](http://phppgadmin.sourceforge.net/doku.php)|Client SQL multi plateformes qui supporte les principaux moteurs de bases de données|
+|[QGIS](https://www.qgis.org/fr/site/forusers/download.html) | Logiciel SIG, peut se connecter à PostgreSQL |
+
+</script></section><section data-markdown><script type="text/template">
+
+### psql
+
+- Client développé au sein même du projet [PostgreSQL](https://www.postgresql.org/), toujours fourni
+ avec le serveur.
+- Caractéristiques :
+    - interface en mode console,
+    - très complet dans le sens où il permet d'exploiter l'ensemble des
+ fonctionnalités de PostgreSQL,
+    - dispose d'une multitude de raccourcis facilitant son utilisation
+- Peut être utilisé sur des serveurs ne disposant pas de sortie
+ graphique.
+
+</script></section><section data-markdown><script type="text/template">
+
+### psql
+
+![](assets/images/psql.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+### PgAdmin4
+
+- [PgAdmin4](https://www.pgadmin.org/) est le client graphique Open Source le plus évolué. Sous
+ Windows, il est installé par défaut avec PostgreSQL.
+
+- Caractéristiques :
+  - Application web
+  - Coloration syntaxique
+  - Autocomplétion
+  - Import/export SQL et CSV
+  - Bonne visibilité sur l'organisation des données (tables et vues)
+  - Très complet, permet l'accès à l'ensemble des objets et fonctionnalités de PostgreSQL
+  - Plan d'exécution graphique
+  - Plusieurs plugins existent pour visualiser les objets PostGIS.
+  - Les dernières versions intègrent un visualiseur de géométries.
+
+</script></section><section data-markdown><script type="text/template">
+
+### PgAdmin4
+
+![](assets/images/pgadmin4.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+### phpPgAdmin
+
+- [phpPgAdmin](https://github.com/phppgadmin/phppgadmin) est un fork de phpMyAdmin.
+- Caractéristiques :
+    - application Web, ne nécessite qu'un navigateur Web (pas
+ d'installation locale),
+    - peu ergonomique,
+    - très complet, permet l'accès à l'ensemble des objets et
+ fonctionnalités de PostgreSQL.
+- phpPgAdmin est fréquemment utilisé lorsqu'on souhaite donner
+ l'accès au serveur à un public large.
+- Projet en mode maintenance, peu d'évolutions mais des correctifs apportés plus ou moins régulièrement
+
+</script></section><section data-markdown><script type="text/template">
+
+### phpPgAdmin
+
+![](assets/images/phppgadmin.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+### HeidiSQL
+
+- Opensource
+- Disponible uniquement sur Windows et sous Linux (par l'intermédiaire de Wine)
+- Supporte MariaDB, MySQL, PostgreSQL
+- Coloration syntaxique
+- Import/export SQL et CSV
+- Autocomplétion
+- Pas de gestion des transactions
+
+</script></section><section data-markdown><script type="text/template">
+
+![](assets/images/heidisql.jpg)
+
+</script></section><section data-markdown><script type="text/template">
+
+### DBeaver
+
+- Client SQL écrit en JAVA supportant beaucoup de drivers : MySQL, PostgreSQL, SQLite, Oracle, DB2, SQL Server, Sybase, Teradata, MongoDB, Cassandra, Redis...
+- Génère un diagramme des tables relationnelles
+- Coloration syntaxique
+- Autocomplétion
+- Drag and drop des tables
+- Visualiseur de géométrie qui reprojette les données sur un fond de plan
+- Client lourd basé sur le framework Eclipse
+- Peu documenté
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/dbeaver.png" width="450">
+
+
+</script></section><section data-markdown><script type="text/template">
+### Autres clients
+
+- Il existe de nombreux pilotes pour PostgreSQL :
+    - [psycopg](http://initd.org/psycopg/) pour Python,
+    - php_pgsql pour PHP,
+    - support dans JDBC (Java Database Connectivity),
+    - existence d'un [pilote ODBC](https://odbc.postgresql.org/) (Open Database Connectivity).
+- Tout programme peut se connecter à PostgreSQL.
+- Les suites bureautiques OpenOffice et MS Office sont capables de se
+ connecter via ODBC.
+
+</script></section><section data-markdown><script type="text/template">
+
+### Clients cartographiques
+
+- De nombreux logiciels SIG sont capables de traiter une table PostGIS
+ comme une couche vectorielle.
+- Dans la sphère OpenSource, on peut noter :
+    - [QGIS](https://www.qgis.org) dispose d'un connecteur et plusieurs plugins fournissent un
+ éditeur de requête (notamment DBManager),
+    - [OpenJUMP](http://www.openjump.org/) ou [UDIG](http://udig.refractions.net/) (Java) disposent d'un connecteur et d'un éditeur de
+ requêtes incorporé,
+    - [TileMill](https://tilemill-project.github.io/tilemill/) permet d'utiliser des requêtes comme source de données pour les feuilles de style.
+    - GDAL et son outil [ogr2ogr](https://gdal.org/programs/ogr2ogr.html) permettent d'importer et exporter des données géographiques de PostGIS en ligne de commande
+
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Pour la suite
+
+Dans cette formation, nous nous concentrerons sur l'utilisation de :
+* PostgreSQL et PostGIS via PgAdmin4,
+* Qgis pour la partie cartographique.
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Installation
+
+### PostgreSQL/PostGIS
+<img src="assets/images/postgresql_postgis.png" width="300">
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Sous Linux (Debian / Ubuntu)
+
+- Ajouter le dépot dans source.list
+
+```shell
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/\
+apt nomdistribution-pgdg main" >> /etc/apt/sources.list'
+```
+- Ajouter la clé
+
+```shell
+wget --quiet -O - http://apt.postgresql.org/pub/\
+repos/apt/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+- Installer PostgreSQL 13, PGAdmin 4, PostGIS 3, PG Routing, SHP2PGSQL et RASTER2PGSQL :
+
+```shell
+# PostgreSQL 13
+sudo apt install postgresql-13
+# PostGIS 3
+sudo apt install postgresql-13-postgis-3
+# Pg Routing
+sudo apt install postgresql-13-pgrouting
+# SHP2PGSQL/RASTER2PGSQL
+sudo apt-get install postgis-gui
+```
+
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Définir un mot de passe pour l'utilisateur postgres
+
+- Lancer la commande psql avec l'utilisateur postgres
+```psql
+sudo su postgres -c "psql"
+```
+- Rentrer le mot de passe
+```psql
+\password postgres
+```
+- Fermer psql
+```psql
+\q
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Sites utiles:
+
+- Installation de [PgAdmin4](https://gist.github.com/Prototype-X/fd8bf6d8b929224621613316bf37db02)
+- [Osgeo](https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS24UbuntuPGSQL10Apt)
+- Le [wiki](https://wiki.postgresql.org/wiki/Apt) de Postgres
+
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Sous Windows et MacOSX
+
+- Un installeur pour Windows et MacOSX est fourni par une société
+ partenaire : [EntrepriseDB](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads).
+
+- L'installeur « One Click » est librement téléchargeable. Après
+ en avoir obtenu une copie, lancez-le. Le programme vous demandera
+ successivement 5 informations :
+  - les répertoires d'installation et de données,
+  - le mot de passe du super-utilisateur (par défaut utiliser postgres),
+  - le port sur lequel écouter,
+  - la locale à utiliser.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Sous Windows et MacOSX
+
+- À l'issue de l'installation, vous trouverez un nouveau
+ sous-répertoire dans vos programmes avec :
+  - les clients pgAdmin4 et psql,
+  - des boutons de contrôle du service PostgreSQL,
+  - l'accès à la documentation,
+  - StackBuilder.
+
+- StackBuilder permet d'installer proprement des applications tierces,
+ notamment PostGIS.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Sous Windows et MacOSX
+
+- Sur les versions récentes de Windows et sur MacOSX, les problèmes de
+ droits sont fréquents à l'installation.
+
+- Pour Mac, faîtes l'installation avec le compte « root ».
+
+- Sous Windows, créez de préférence un répertoire de données en
+ dehors de « Program Files ». Exécutez l'installeur en tant
+ qu'administrateur.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Sous Windows et MacOSX
+
+- Pour installer PostGIS :
+  - lancez StackBuilder,
+  - sélectionnez le serveur local,
+  - choisissez un miroir (n'importe lequel de ceux proposés devrait faire
+ l'affaire),
+  - dans la catégorie « Extensions », cochez PostGIS,
+  - validez.
+
+- Un nouveau sous-répertoire apparaît dans vos programme pour l'accès
+ à la documentation.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Sous Windows et MacOSX
+
+![](assets/images/stack_builder.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Performances
+
+- [__Optimiser PostgreSQL__](https://pgtune.leopard.in.ua) pour gagner en performances ==> ([__explication des valeurs__](https://community.jaguar-network.com/optimisation-dun-serveur-postgresql/))
+
+- Paramétrage dans le fichier __postgresql.conf__
+- Pour aller plus loin : [__gestion mémoire avec PostgreSQL__](https://www.dalibo.org/glmf107_gestion_memoire_avec_postgresql)
+
+</script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### Prise en main avec quelques requêtes simples
+
+**Exercice 1 : Requêtes SQL**
+
+- 1.1 Créer une base de données vide formation
+- 1.2 Restauration de la base de données formation
+- 1.3 Requêtes simples
+- 1.4 Jointures
+- 1.5 Agrégations
+- 1.6 Ordonnancement, limitation et pagination
+- 1.7 Conditions
+- 1.8 Calculs
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Installation
+
+### Activer PostGIS
+
+#### Méthode d'installation
+
+- PostGIS est une collection de types et fonctions qu'il faut charger
+ dans la base de données.
+- Depuis PostgreSQL 9.1 et PostGIS 2.0, il est possible de charger
+ PostGIS comme extension :
+ ```sql
+CREATE EXTENSION postgis;
+```
+- Cette méthode peut être utilisée sur une base nouvelle ou
+ existante.
+
+- Cette commande, comme toute extension PostgreSQL, doit être executée par un "super user" (par défaut, postgres).
+
+</script></section><section data-markdown><script type="text/template">
+#### Méthode d'installation
+
+- Pour connaître la version de PostGIS installée sur le serveur PostgreSQL :
+ ```sql
+ SELECT PostGIS_full_version();
+ ```
+- Pour mettre à jour PostGIS:
+ ```sql
+ALTER EXTENSION postgis UPDATE;
+ ```
+</script></section></section><section ><section data-markdown><script type="text/template">## Données spatiales
+
+
+
+### Types de données
+
+- PostGIS s'appuie principalement sur la géométrie, il permet
+ d'associer une forme géo-localisée à un enregistrement de la base de
+ données.
+ 
+</script></section><section data-markdown><script type="text/template">
+
+### Types de données
+
+- Ces formes peuvent être :
+![](assets/images/formes_geometriques.png)
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Notation WKT
+
+- Le « Well Known Text » est un langage de description, de la
+ géométrie et de son système de coordonnées, défini dans la spécification Simple Feature de l'[OGC](http://www.opengeospatial.org/docs/is).
+ 
+```
+POINT(10 10)
+MULTIPOINT(10 10,  20 20)
+LINESTRING(10 10, 20 20, 30 40)
+MULTILINESTRING((10 10, 20 20),
+                (15 15, 30 15))
+-- /!\\ double parenthèses
+POLYGON((10 10, 10 20, 20 20, 20 15, 10 10))
+MULTIPOLYGON(((10 10, 20 20, 20 15, 10 10)),
+              ((60 60, 70 70, 80 60, 60 60)))
+GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30),
+                   LINESTRING(15 15, 20 20))
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+
+### Notation WKB
+
+Le « Well Known Binary» en est la représentation binaire.
+```
+POINT(10 10)-> "010100000000000000000024400000000000002440"
+```
+- 01 : sens d'écriture
+- 01 : Point
+- Puis deux fois la notation de "10" en 8-bytes  :
+ http://en.wikipedia.org/wiki/Double-precision_floating-point_format
+ 
+
+
+ 
+
+</script></section><section data-markdown><script type="text/template">
+
+### Système de coordonnées
+
+- PostGIS stocke le système de coordonnées dans lequel une géométrie
+ est définie.
+- L'information « système de coordonnées » est représentée par
+ son code [EPSG](http://www.epsg-registry.org/) (clé primaire de la table spatial_ref_sys : __srid__).
+- PostGIS ne fait __JAMAIS__ de reprojection implicite à la volée.
+- Une opération impliquant deux géométries décrites dans des
+ systèmes différents provoquera une erreur.
+
+</script></section><section data-markdown><script type="text/template">
+
+
+### Projections cartographiques
+
+<img src="assets/images/projections.jpg" width="450">
+
+</script></section><section data-markdown><script type="text/template">
+A lire 👉 **Le scandale de Mercator** en bande dessinée
+https://twitter.com/Artisans_Cartos/status/1260187936202645505
+
+<table><tr>
+<td> <img src="https://pbs.twimg.com/media/EX0UllgX0AELNJe?format=jpg&name=medium" alt="Le scandale de Mercator" style="width: 800px;"/> </td>
+<td> <img src="https://pbs.twimg.com/media/EX0UxvvXYAAATbK?format=jpg&name=medium" alt="Le scandale de Mercator" style="width: 800px;"/> </td>
+</tr></table>
+</script></section><section data-markdown><script type="text/template">
+
+### 2D, 3D, 4D
+
+En plus des couples Est / Nord (ou latitude / longitude), PostGIS peut gérer (et
+ indexer) deux dimensions supplémentaires :
+- __Z__ est l'élévation (__2.5D__).
+- __M__ est une mesure associée à un point. Elle est utilisé pour faire de l'interpolation linéaire et de la segmentation dynamique.
+- Plusieurs cas de figure : __2D__, __3DZ__, __3DM__, __4D__.
+- Certains fonctions disposent de variantes tenants compte de __Z__ ou de __M__.
+
+</script></section><section data-markdown><script type="text/template">
+
+### Manipulation de coordonnées géographiques
+
+- Par défaut, PostGIS fait ses calculs selon les principes de la
+ géométrie plane (coordonnées cartésiennes). Or il est très fréquent de manipuler des données en coordonnées géographiques (long/lat)
+ 
+- Dans ce cas, il est préférable de __choisir une projection adaptée__ à la zone d'étude et de __transformer les coordonnées__ des objets. 
+
+</script></section><section data-markdown><script type="text/template">
+
+### Espace sphérique
+
+- Si l'on souhaite faire des calculs de longues distances à l'échelle mondiale, PostGIS a créé le type '__geography__' depuis sa version 1.5.
+
+![](assets/images/orthodromie.jpg)
+
+- Les approximations de distance sont alors plus précises (calcul en
+ « grand cercle »), mais aussi plus coûteuses.
+ 
+- Seules quelques fonctions disposent de variantes pour ce type.
+ </script></section><section data-markdown><script type="text/template">
+ Pour aller plus loin :
+ 
+ - [WKT/WKB](https://www.gaia-gis.it/spatialite-3.0.0-BETA/spatialite-cookbook-fr/html/wkt-wkb.html)
+ - [Coordonnées géographiques](http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/geography.html) 
+ 
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL basique
+
+###  Manipulation des données avec PostGIS
+
+<iframe src="https://giphy.com/embed/1463o17ejELYqs" width="200" height="200" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Différents types de fonctions
+
+Outre le type 'geometry', PostGIS fournit de nombreuses fonctions spatiales. Ces fonctions sont détaillées dans la documentation en ligne.
+
+- __Constructeurs__ : ST_MakePoint(), ST_GeomFromText(), ... 
+- __Relations géométriques__ : ST_Distance(), ST_Within(),
+ ST_Intersects(), ST_Overlaps(), ...
+- __Traitements__ : ST_Centroid(), ST_Area(), ST_Buffer(), ...
+- __Descriptions__ : ST_AsText(), ST_SRID(), ...
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Constructeurs (1/2)
+
+- La fonction __ST_GeomFromText()__ permet de créer un objet de type
+ geometry à partir du __WKT__. On l'utilise pour décrire « à la main »
+ une géometrie.
+ ```
+SELECT * FROM parcelle
+WHERE the_geom = ST_GeomFromText('POLYGON(...)', 2154);
+```
+ 
+- Quelques fonctions utiles :
+
+  - __ST_MakePoint(x, y)__→ construit une géométrie à partir de coordonnées x et y.
+  - __ST_MakeBox2D(point, point)__ → crée une enveloppe spatiale définie par le point inférieur gauche et le point supérieur droit.
+  - __ST_MakeLine(set)__→ prend une séquence de points et les enchaîne pour former une ligne
+  - __ST_Polygonize(set)__→ crée une geometrycollection constitué de potentiels polygones à partir d'un ensemble de géométries
+  
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Constructeurs (2/2)
+
+- __CAST__ (coercition) : force le type d'un objet
+
+  opérateur chaine::type
+  
+  - Geometries (EWKT)
+ 
+  ```
+  SELECT 'SRID=4326;POINT(0,0)'::geometry
+  ```
+
+  - Emprises
+ 
+  ```
+  SELECT 'BOX(xmin ymin,xmax ymax)'::box2d
+  ```
+
+</script></section><section data-markdown><script type="text/template">
+
+
+
+### Vérification du système de coordonnées 
+
+On peut connaître  le système de coordonnées (SRID) d'une géométrie :
+```
+SELECT ST_SRID(geometry) FROM ma_table LIMIT 1;
+```
+Il est possible de récupérer sa définition au format WKT / Proj4 (elle contient les __unités__ utilisées):
+```
+SELECT srtext / proj4text FROM spatial_ref_sys
+WHERE srid = 3857;
+```
+On peut transformer une géométrie dans un autre système de coordonnées :
+- __ST_Transform(geom, srid)__
+
+Si le système de coordonnées est indéfini, on peut le forcer (avec prudence - PostGIS ne fait aucune transformation de manière implicite) :
+- __ST_SetSRID(geom, srid)__
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Relations géométriques (1/2)
+Pour tester la relation géométrique liant deux objets, on peut
+ utiliser des fonctions :
+ 
+- __ST_Equals(geomA, geomB)__
+
+![](assets/images/equals.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Disjoint(geomA, geomB)__
+
+![](assets/images/disjoint.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Intersects(geomA, geomB)__
+
+![](assets/images/intersects.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Crosses(geomA, geomB)__
+
+![](assets/images/cross.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Overlaps(geomA, geomB)__
+
+![](assets/images/overlap.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Touches(geomA, geomB)__
+
+![](assets/images/touch.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_Within(geomA, geomB)__
+- __ST_Contains(geomA, geomB)__
+
+![](assets/images/within_contains.png)
+
+</script></section><section data-markdown><script type="text/template">
+
+- __ST_DWithin(geomA, geomB, dist)__
+
+![](assets/images/dwithin.png)
+
+Source : [Postgis spatial relationships](http://postgis.fr/chrome/site/docs/workshop-foss4g/doc/spatial_relationships.html) 
+
+
+Voir les exemples de ces relations [ici](http://www.postgis.org/docs/reference.html) 
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Relations géométriques (2/2)
+
+
+De même, des opérateurs testent la relation géométrique entre les
+boîtes englobantes de deux objets :
+- __A = B__  → A egal B
+- __A && B__ → A intersecte B
+- __A ~ B__  → A contient B
+- __A @ B__  → A est contenue par B
+- __A<#>B__  → distance between A and B
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Différence entre && et St_Intersects 
+
+Ces deux méthodes permettent de sélectionner des géométries qui intersectent d'autres géométries. 
+
+- && utilise les boîtes englobantes pour vérifier qu'elles s'intersectent. Cette méthode peut donc renvoyer plus d'entités en raison des BBox qui se chevauchent. **Elle peut donc être plus rapide que la fonction St_Intersects.**
+
+Exemple : 
+```
+SELECT * FROM a, b WHERE a.geom && b.geom;
+```
+Cette requete renvoit tous les éléments de a et b dont les boites englobantes s'intersectent.
+
+Source : [ST_Intersects and &&](https://geekswithlatitude.readme.io/docs/st_intersects)
+</script></section><section data-markdown><script type="text/template">
+
+- St_Intersects sélectionne avec précision toutes les géométries qui s'intersectent. Elle commence par faire une première sélection avec les BBox puis elle réduit la liste des entités à celles dont les géométries se croisent réellement.
+
+Exemple : 
+```
+SELECT * FROM a, b 
+WHERE ST_INTERSECTS (a.geom,b.geom);
+```
+Cette requete renvoit d'abord tous les éléments de a et b dont les boites englobantes s'intersectent, puis réduira ensuite la liste des éléments à ceux qui se coupent réellement à l'aide des géométries.
+![](assets/images/index_spatial.png)
+
+Ici, qu'est ce qui renvoit ```TRUE``` au test d'intersection de l'étoile?
+
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Traitements
+- __Aggrégation de géométries__→Même comportement que __COUNT__, __AVG__, __SUM__... 
+- __ST_Buffer(geom, distance)__→ Zone tampon
+- __ST_Intersection(geomA, geomB)__→Portion commune entre  A et B
+- __ST_Difference(geomA, geomB)__→Portion de A qui n'intersecte pas B
+- __ST_Union(geomA, geomB)__→Union de deux géométrie sans les contours
+- __ST_Line_Interpolate_Point()__→Point interpolé sur la ligne
+- __ST_ConvexHull()__→Plus petite géométrie convexe qui englobe toutes les géométries
+- __ST_Collect(geometry)__→ MULTI*
+- __ST_Dump(geometry)__ → Liste de géométries
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Transformations
+
+- __ST_Scale(geom, Xcoef, Ycoef, Zcoef)__→Retaille la géométrie
+- __ST_Affine(geom, X, Y, Z)__→Transformation affine (translation)
+- __ST_Simplify(geom, tolerance)__→Suppression de x noeuds
+- __ST_SnapToGrid(...)__→Accroche les points à une grille
+- __ST_LineMerge(geometry collection)__→Ensemble de lignes contigues
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Extraire des informations
+
+- __ST_AsText(geom)__→ WKT
+- __ST_Dimension(geom)__ → Point, Ligne, Polygone
+- __ST_Centroid(geom)__→ Barycentre
+- __ST_Envelope(geom)__ → BBOX
+- __ST_GeometryType(geom)__→ Type de géométrie
+- __ST_X(point)__ et __ST_Y(point)__→ Long,lat
+- __ST_Area(geom)__→ Surface
+- __ST_Perimeter(geom)__→ Longueur de tous les contours
+
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Différences entre ST_ et pas ST_
+
+- L'adoption par Postgis de la norme SQL/MM impose de nommer les fonctions ```ST_``` (*Spatial Type*) et de les séparer des autres fonctions.
+- Les fonctions Postgis ne commençant pas par ```ST_``` sont dépréciées et amenées à être supprimées dans les versions ultérieures :
+	→  ex : pour trouver le système de coordonnée d'une géométrie,  utiliser ```ST_SRID(geom)``` et non plus ```Find_SRID(geom)```
+	
+</script></section><section data-markdown><script type="text/template">	
+	
+### Pratique 
+
+#### Prise en main de Postgis
+
+**Exercice 2 : Opérations spatiales**
+
+	- 2.1 Connaître le système de coordonnées et l'unité des géométries
+	- 2.2 Construire des géométries « à la volée »
+	- 2.3 Jointure spatiale
+	- 2.4 Distances
+	- 2.5 Détection des micro-polygones
+	- 2.6 Agréger des géométries 
+</script></section></section><section ><section data-markdown><script type="text/template">## Structure de PostgreSQL
+
+### Hiérarchie des objets
+
+* Les données de l'utilisateur sont organisées selon la hiérarchie : base de données, schéma, table, colonne.
+* Les tables et les colonnes permettent le stockage de données relationnelles.
+* Les bases de données et les schémas organisent les tables en groupes thématiques.
+
+</script></section><section data-markdown><script type="text/template">
+
+### Hiérarchie des objets
+
+<img src="assets/images/postgresql_hierarchy.jpg" width="300">
+
+</script></section><section data-markdown><script type="text/template">
+
+### Hiérarchie des objets
+
+- À part la liste des `users` et `roles`, aucune donnée n'est partagée
+ entre deux bases de données.
+- Les tables supportent :
+  - les contraintes (primary key, foreign key, check, unique, etc...),
+  - les index, notamment de type GiST et btree.
+- Les `functions`, `casts`, `operators`, `sequences` et `types` définis par l'utilisateur sont stockés au niveau des schémas.
+
+</script></section><section data-markdown><script type="text/template">
+
+### Notion de « catalog »
+
+- Les objets créés par les utilisateurs sont décrits dans... une base
+ de données !
+- Les tables de cette méta-base sont appelées catalogs et sont
+ préfixées par « pg_* ».
+- Les `catalogs` ne sont visibles que par les super-utilisateurs.
+- Ne tentez pas de modifier ces tables !
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Les « catalogs » PostGIS
+
+- PostGIS n'utilise pas ou peu les catalogs pour publier ses propres
+ méta-données (fonctionnement imposé par le standard OGC Simple
+ Feature).
+- Les colonnes PostGIS sont décrites dans les vues :
+  - `geometry_columns`
+  - `geography_columns`
+  - `raster_columns`
+  - `raster_overviews`
+- Les systèmes de coordonnées sont listés dans la table
+ `spatial_ref_sys`.
+ 
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Structure de PostgreSQL
+
+
+### Gestion des schémas
+
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Notion de « schema »
+
+- Les ```schemas``` sont des éléments issus du monde Oracle.
+- Utiles pour organiser les droits ou les données par  thématique.
+- Pour être « transparent », un ```schema``` doit être enregistré dans
+ le ```search_path```.
+- Les ```schemas``` ne font pas partie de la norme SQL et sont parfois mal reconnus par les applications clientes.
+- Par défaut tout est dans le schéma ```public```.
+
+Pour lister toutes les tables du schéma public:
+```sql
+SELECT table_name 
+FROM information_schema.tables 
+WHERE  table_schema='public';
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Visibilité des schémas
+
+- Notion de variables : ```SET nom = valeur```.
+- On peut accéder aux schémas non visibles en utilisant leur nom comme
+ préfixe.
+- Pour un accès « transparent » au schéma, il faut jouer avec le
+ ```search_path``` :
+ 
+```sql
+-- Pour la session courante ...
+SHOW search_path;
+SET search_path = topology, public;
+RESET search_path ;
+
+-- ... ou définitivement 
+ALTER USER martin SET search_path = topology, public;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Intérêt d'utiliser des schémas
+
+ L'avantage de l'utilisation des schémas par rapport à l'utilisation de plusieurs bases est qu'**il est possible d'effectuer des requêtes impactant plusieurs schémas d'une base, ce n'est pas le cas entre plusieurs bases**.
+
+
+On peut voir un schéma comme des « **sous-bases** ». Ces sous-bases ayant la possibilité d'être poreuses, nous pouvons faire transiter ou pas des informations entre les schémas. Chose que l'on ne peut pas faire entre les bases de données à moins d'utiliser des programmes externes ou des connecteurs particuliers (comme *dblink*).</script></section></section><section ><section data-markdown><script type="text/template">## Organiser les données
+
+### Introduction au modèle relationnel
+
+![](assets/images/Etages.svg)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Modélisation relationnelle
+
+- Le modèle de données organise un ensemble d'__informations
+ sémantiquement liées__.
+- Chaque information peut prendre diverses __valeurs__. 
+- L'ensemble des valeurs possibles pour une information est son
+ __domaine__.
+- Au niveau du SGBD, le domaine est défini par le __type de données__ et
+ les éventuelles __contraintes__.
+- Toutes les informations directement dépendantes d'une clé primaire
+ sont liées dans une __relation__.
+
+
+</script></section><section data-markdown><script type="text/template">
+#### Cardinalité
+
+| CARDINALITE| SYMBOLE|DESCRIPTION|
+|----------|:-------------:|------:|
+|Un-Un|1.1|Une occurence de la 1ère entité correspond à une et une seule occurence de la 2de entité|
+|Un-Plusieurs|1.n|Une occurrence de la 1ère entité correspond à plusieurs occurrences de la 2de entité|
+|Plusieurs-Un|n.1|Plusieurs occurrences de la 1ère entité correspondent à la même occurrence de la 2de entité|
+|Plusieurs-Plusieurs|n.n|Plusieurs occurrences de la 1ère entité correspondent à plusieurs occurrences de la 2de entité |
+
+</script></section><section data-markdown><script type="text/template">
+
+La cardinalité indique le nombre d'occurences d'une entité par rapport à une autre entité.
+Une relation de type n-n devient une nouvelle table, appelée __table de correspondance__. 
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Comment lire un modèle relationnel de données?
+
+![](assets/images/Formateurs.svg)
+
+</script></section><section data-markdown><script type="text/template">
+
+- Un formateur peut dispenser **1 ou plusieurs** sessions==> *1.n*
+- Une session peut être dispensée **par 1 et 1 seul** formateur==>*1.1*
+- Une formation concerne **1 ou plusieurs** sessions==>*1.n*
+- Une session concerne **1 et 1 seule** formation==>*1.1*
+- Une session peut avoir **1 ou plusieurs** stagaires==>*1.n*
+- Un stagiaire peut assister à **1 et 1 seule** session==>*1.1*
+- Une formation peut être organisée par  **1 ou plusieurs** agences Makina Corpus==>*1.n*
+- Une agence Makina Corpus peut organiser à **0 ou plusieurs** formations==>*0.n*
+
+</script></section><section data-markdown><script type="text/template">
+#### Logiciels d'aide à la conception 
+
+Il existe plusieurs logiciels d'aide à la conception de bases de données relationnelles.
+
+- [AnalyseSI](http://www.analysesi.com/), fourni au format d'archive (java).
+- [Mocodo](http://www.mocodo.net/), site interactif. 
+
+Ils dessinent le modèle conceptuel de données (MCD) et génèrent le schéma relationnel (MLD : modèle logique de données) pour PostgreSQL. 
+
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Modélisation relationnelle
+
+- Le modèle relationnel explique comment organiser l'information en
+ s'appuyant sur les __relations sémantiques__.
+- Le modèle relationnel offre donc une base de travail pour la gestion
+ de l'information.
+- Toutefois, si une information est __redondante__, la __cohérence__ de
+ l'information ne peut être garantie.
+- La normalisation du modèle résoud ce problème en imposant des
+ __formes normales__ au concepteur.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Formes normales
+
+**Objectif** : permettre la __décomposition en relations sans perdre de l'information__.
+
+**Avantages** : 
+* limiter les redondances de données (multiples écritures) ;
+* diminuer la volumétrie globale, ce qui réduit l'espace disque nécessaire, mais plus encore la taille du cache - les SGBDR travaillant en mémoire ;
+* interdire les incohérences de données venant des redondances dont une partie seulement a été mise à jour, ce qui rendrait de fait les données inutilisables (différentes versions d'une même information, sans que l'on sache laquelle est valide) ;
+* limiter grandement le nombre et la durée des mises à jour qui sont des processus bloquants (écritures).
+
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/formesnormales.png" width="500">
+
+*Source* : Introduction pratique aux bases de données relationnelles (2è ed, 2006) - [Springer] - A. Meier
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Formes normales
+##### 1NF
+
+*« Dans un modèle en 1ère forme normale, aucun attribut n'est
+ multi-valué ».*
+ 
+Il s'agit de vérifier qu'il n'y a jamais plusieurs valeurs stockées
+ pour une information.
+ 
+- Exemple : une personne peut avoir un ou plusieurs prénoms. On pourra
+ décider :
+  - d'avoir trois colonnes,
+  - de créer une table reliée par une clé externe,
+  - de ne garder que le prénom principal.
+  
+  </script></section><section data-markdown><script type="text/template">
+ Exemple de table non normalisée
+ 
+ ```sql
+ personne(#nom, profession) 
+ ```
+
+|nom| profession | 
+|----------|:-------------:
+|Martin|Géomaticien|
+|Dupont|Développeur-Graphiste|
+
+La relation **personne** n'est pas en 1ere forme normale, car l'attribut `profession` peut contenir plusieurs valeurs.
+
+</script></section><section data-markdown><script type="text/template">
+
+ Exemple de table en 1ère forme normale :
+ 
+On ajoute `profession` à la clé pour faire apparaître deux tuples à Dupont.
+
+personne(#nom, #profession) 
+
+|nom| profession | 
+|----------|:-------------:
+|Cohen|Géomaticien|
+|Dupont|Développeur web|
+|Dupont|Graphiste|
+
+</script></section><section data-markdown><script type="text/template">
+
+...ou alors on ajoute un attribut `professionsecondaire`
+
+personne(#nom, profession, professionsecondaire) 
+
+|nom| profession|profession secondaire|
+|----------|:-------------:|:-------------:
+|Cohen|Géomaticien|Null|
+|Dupont|Développeur web|Graphiste|
+
+
+</script></section><section data-markdown><script type="text/template">
+
+##### 2NF
+
+ *Une relation est en 2eme forme normale si elle est en 1ere forme normale.*
+ 
+« Dans un modèle en 2ème forme normale, tout attribut hors de
+ la clé primaire ne dépend pas d'une sous-partie seulement de la clé »
+ 
+ La deuxième forme normale permet d'éliminer les dépendances entre des parties de clé et des attributs n'appartenant pas à une clé.
+ 
+ </script></section><section data-markdown><script type="text/template">
+- Exemple :
+
+```sql
+personne(#numeroemploye, #profession, nom, prenom, salaire) 
+```
+|numeroemploye|profession|nom|prenom|salaire| 
+|----------|:-------------:|:-------------:|:-------------:| :-------------:
+|1|Géomaticien|Cohen|Hélène|2000|
+|2|Développeur web|Dupont|André|2250|
+|3|Comptable|Michel|Vincent|2200|
+|4|Chargé de communication|Robert|Marcel|2200|
+|5|Chef de projet|Charpentier|Elodie|2300|
+
+
+La relation **personne** n'est pas en 2ème forme normale car `profession` (une partie de clé) détermine salaire (un attribut qui n'appartient pas à une clé)
+
+</script></section><section data-markdown><script type="text/template">
+C'est `profession` qui détermine `salaire`, il faut donc décomposer `profession` en deux relations.
+
+```sql
+personne(#numeroemploye,#profession=>profession,nom,prenom) 
+profession(#profession, salaire)
+```
+
+**personne**
+
+|numeroemploye|profession|nom|prenom|
+|----------|:-------------:|:-------------:|:-------------:|
+|1|Géomaticien|Cohen|Hélène|
+|2|Développeur web|Dupont|André|
+|3|Comptable|Michel|Vincent|
+|4|Chargé de communication|Robert|Marcel|
+|5|Responsable ressources humaines|Charpentier|Elodie|
+
+</script></section><section data-markdown><script type="text/template">
+
+**profession**
+
+|profession|salaire| 
+|----------|:-------------:|
+|Géomaticien|2000|
+|Développeur web|2250|
+|Comptable|2100|
+|Chargé de communication|2200|
+|Responsable ressources humaines|2300|
+
+Ainsi `salaire` dépend d'une clé (`profession`) et non plus d'une partie de clé.
+
+
+</script></section><section data-markdown><script type="text/template">
+
+##### 3NF
+*Une relation est en 3ème forme normale si elle est en 2ème forme normale.*
+
+« Dans un modèle en 3ème forme normale,  tout attribut n’appartenant pas à une clé ne dépend pas d’un autre attribut non clé. »
+
+La troisième forme normale permet d'éliminer les dépendances entre les attributs n'appartenant pas à une clé.
+ </script></section><section data-markdown><script type="text/template">
+ 
+ - Exemple :
+
+```sql 
+profession(#profession, salaire, diplome) 
+```
+n'est pas en 3ème forme normale.
+
+|profession|salaire|diplome| 
+|:-------------:|:-------------:|:-------------:|
+|Géomaticien|2000|SIG|
+|Développeur web|2250|Technologies web|
+|Comptable|2100|Comptabilité et de Gestion|
+|Chargé de communication|2200|Information et Communication|
+|Responsable ressources humaines|2300|Gestion des Ressources humaines|
+
+
+</script></section><section data-markdown><script type="text/template">
+
+L'attribut `salaire`, qui n'est pas une clé détermine `diplome`. Pour être en 3ème forme normale il faut décomposer la table **profession**.
+
+```sql
+profession(#profession, salaire=>salaire)
+salaire(#salaire, diplome)
+```
+**profession**
+
+|profession|salaire|
+|:-------------:|:-------------:|
+|Géomaticien|2000|
+|Développeur|2250|
+|Comptable|2100|
+|Chargé de communication|2200|
+|Responsable ressources humaines|2300|
+
+</script></section><section data-markdown><script type="text/template">
+
+**salaire**
+
+|salaire|diplome| 
+|:-------------:|:-------------:|
+|2000|SIG|
+|2250|Technologies web|
+|2100|Comptabilité et de Gestion|
+|2200|Information et communication|
+|2300|Gestion des Ressources humaines|
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Choix d'implémentation
+
+- Dans la réalité et pour des soucis de simplification un schéma n'est __jamais en forme normale__...
+
+- Cela n'empêche pas de vérifier la cohérence avec des contraintes
+ comme ```UNIQUE``` et/ou ```NOT NULL```.
+ 
+- Lorsqu'une jointure est très fréquente, on s'autorisera parfois à
+ la stocker dans une table.
+ 
+- Les données calculées peuvent être stockées.
+
+Pour aller plus loin : [Wikipedia](https://fr.wikipedia.org/wiki/Forme_normale_%28bases_de_donn%C3%A9es_relationnelles%29)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Compromis entre normalisation et dénormalisation?
+
+- On normalise en général par **souci d'économie d'espace**, pour **éviter de dupliquer** les données et pour **faciliter la maintenance** de la base de données.
+- La normalisation **peut aussi entrainer des temps d'accès plus longs si les requetes sont trop complexes**. 
+- La dénormalisation introduit une **redondance des données** au sien de plusieurs tables **afin de simplifier et optimiser** le traitement des requetes ou pour ajuster les données à la demande de l'utilisateur.
+- **Dénormaliser permet d'éviter des calculs longs et fastidieux.**
+</script></section><section data-markdown><script type="text/template">
+
+|Cas d'utilisation|Conseil|
+|:-------------:|:-------------:|
+|Peu de lecture, peu de modifications|Pas besoin de dénormaliser|
+|Peu de lecture, beaucoup de modifications|Normaliser|
+|Beaucoup de lecture, beaucoup de modifications|Dénormaliser va dégrader les performances du serveur|
+|Beaucoup de lecture, peu de modifications|Dénormaliser sera le meilleur choix|
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Organiser les données
+
+### Définition des données
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Création d'une table
+
+- En premier lieu, créer une table consiste à créer une liste de
+ colonnes.
+
+- Chaque colonne est constituée d'un nom, d'un type et éventuellement
+ d'options :
+  - ```DEFAULT valeur```
+  - contrainte de colonne (```UNIQUE```, ```NOT NULL```...)
+
+- Cette liste de colonnes est éventuellement complétée par une liste
+ de contraintes de table.
+
+- On peut créer la table avec le statut ```TEMPORARY```.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Définition des contraintes
+
+- Contrainte de clé primaire : ```UNIQUE``` __et__ ```NOT NULL```.
+ Elle peut être multiple (porter sur une ou plusieurs colonnes).
+
+- La contrainte de clé étrangère assure l'intégrité des tables d'une base de données. Elle peut être multiple et posséder des
+ options :
+
+```sql
+FOREIGN KEY insee REFERENCES commune ( insee )
+ON DELETE SET NULL ON UPDATE CASCADE
+```
+
+- La contrainte CHECK permet d'exprimer une assertion. Sa condition doit
+ toujours être vraie :
+
+```sql
+CHECK ( age > 0 AND char_length(nom) > 2 )
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Choix de la clé
+
+- De nombreuses applications tierces exigent une clé primaire de type
+ ```integer``` (QGis par exemple).
+- Le type ```serial``` permet de créer un entier auto-incrémenté. Il s'agit
+ en fait de la combinaison du type ```integer``` et d'une simple séquence.
+```sql
+CREATE TABLE my_table(
+   id SERIAL PRIMARY KEY,
+   name VARCHAR NOT NULL
+);
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Types de données standards
+
+- Les __principaux__ [types de données PostgreSQL](https://docs.postgresql.fr/13/datatype.html) sont :
+  - numériques : entiers, flottants, « serial »
+  - chaînes de caractères
+  - texte
+  - booléens
+  - énumérations
+  - dates, horaires
+- Chaque type dispose d'un panel de fonctions et d'opérateurs
+ permettant de le manipuler.
+
+- Il est possible de créer ses propres types.
+
+Pour en savoir plus : [Les types numériques ](https://www.sqlfacile.com/apprendre_bases_de_donnees/les_types_sql_numeriques)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Types de données ++
+
+Des types plus élaborés sont définis dans PostgreSQL :
+- Intervalle (```daterange```, ```int8range```)
+- Liste ou tableau (```int[]```)
+- Adresse MAC (```macaddr```)
+
+Des modules externes permettent de supporter des types additionnels :
+- Universally Unique Identifiers (UUID) avec le module ```uuid-ossp```
+- Clé-valeur avec le module ```hstore```
+- …
+
+
+</script></section><section data-markdown><script type="text/template">
+
+
+### Pratique
+
+#### Structuration des données
+
+**Exercice 3 : Structuration de données**
+
+- 3.1 Définition de données attributaires
+
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Manipulation des données
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Manipulation des données
+
+- ```UPDATE``` et ```DELETE``` supportent tous les deux la clause ```WHERE``` pour définir
+ des conditions complexes et faire des jointures. Ceci afin de
+ sélectionner les enregistrements à mettre à jour ou supprimer.
+
+- On peut donc sélectionner un ensemble particulier de données comme
+ avec une requête ```SELECT``` et modifier cet ensemble grâce à ```UPDATE``` ou le
+ détruire grâce à ```DELETE```.
+
+- La commande ```TRUNCATE``` est un raccourci pour vider une table. Elle
+ opère plus rapidement que ```DELETE```.
+
+ ```sql
+ TRUNCATE TABLE my_table;
+ ```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Requêtes de modification
+
+- La commande ```UPDATE``` modifie des données. Dans sa forme la plus simple,
+ une telle requête est :
+
+```sql
+UPDATE table SET column = value; -- modifie tout !
+```
+- Il est possible d'utiliser une clause ```WHERE``` pour ne modifier que les lignes validant une condition :
+
+```sql
+UPDATE parcelle SET surface_cadastrale = ST_Area(the_geom)
+WHERE id_parcelle = 357;
+```
+- Enfin, si la condition requiert une jointure, on peut utiliser la
+ clause FROM :
+
+```sql
+UPDATE parcelle p SET insee = s.insee
+FROM section s
+WHERE p.id_section = s.id_section ;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Requêtes de suppression
+
+- On détruit des données avec ```DELETE```. Dans sa forme la plus simple, une
+ telle requête est :
+
+```sql
+DELETE FROM table; -- supprime toutes les lignes !
+```
+- Il est possible d'utiliser une clause ```WHERE``` pour ne supprimer que les lignes validant une condition :
+
+```sql
+DELETE FROM parcelle
+WHERE ST_Area(the_geom) > 1000
+```
+- Enfin, si la condition requiert une jointure, on peut utiliser la
+ clause ```USING``` :
+
+```sql
+DELETE FROM parcelle p
+USING commune c
+WHERE c.insee = p.insee AND c.nom ILIKE  'paris' ;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Différences entre TRUNCATE et DELETE
+
+|POSSIBILITÉS |DELETE|TRUNCATE|
+|----------|----------|:-------------:|
+|Restauration|Possible avec un COMMIT ou ROLLBACK|Pas de ROLLBACK possible|
+|WHERE|Possible|Pas de clause WHERE|
+|Rapidité|Moins rapide|Plus rapide|
+|Clé primaire autoincrémentée|Garde le compteur en cours|Remet le compteur à zéro|
+|Journal des transactions|Enregistre les données de chaque ligne supprimée|N'enregistre pas les logs|
+|Langage|Langage de Manipulation de Données (LMD)|Langage de Définition de Données (LDD)|
+
+
+</script></section><section data-markdown><script type="text/template">
+### Pratique
+
+#### Structuration des données
+
+**Exercice 3 : Structuration de données**
+
+- 3.2 Mise à jour de données attributaires
+</script></section></section><section ><section data-markdown><script type="text/template">## Organiser les données
+
+### Définition des données spatiales
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Colonne géométrique
+
+- Le type ```geometry``` reçoit 2 paramètres :
+  - le type géométrique : ```point```, ```linestring``` ou ```polygon``` avec
+ optionnellement le préfixe ```multi``` et les suffixes ```z``` ou ```m```,
+  - l'identifiant du système de coordonnées.
+
+```sql
+ALTER TABLE parcelle
+  ADD geom geometry(Polygon, 2154) ;
+```
+```sql
+ALTER TABLE parcelle
+  ADD geom geometry(MultiPolygonZM, 2154) ;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Ancienne méthode
+
+- Avant PostGIS 2.0, il fallait utiliser une fonction pour créer des
+ colonnes géométriques :
+
+```sql
+SELECT AddGeometryColumn('table_name', 'att_name', srid, 'GEOM TYPE',
+ dim);
+```
+- En plus de créer la colonne, cette fonction renseigne la méta-table
+ `geometry_columns`  et crée les contraintes d'intégrité
+ nécessaires.
+
+- De même, pour supprimer une colonne :
+
+```sql
+SELECT DropGeometryTable('table_name');
+SELECT DropGeometryColumn('table_name', 'col_name');
+```
+</script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### Structuration des données
+
+**Exercice 3 : Structuration de données**
+
+- 3.3 Définition de données géométriques
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Stocker une requête
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Que stocker ?
+
+- On peut stocker soit la définition de la requête, soit son
+ résultat, soit les deux (à partir de Postgresql 9.3).
+
+- Les « vues » sont des requêtes enregistrées. Elles se comportent
+ comme des tables (en lecture seule). Il en existe 2 types :
+
+ 	- les **vues**. Elles s'actualisent automatiquement à chaque UPDATE, INSERT ou DELETE. La requête sous-jacente est
+ exécutée à chaque lecture.
+ 	- les **vues matérialisées** (représentation d'une requete sous la forme d'une table).
+ 	Le résultat est stocké et raffraichi à la demande.
+
+- Une table peut être créée ou simplement remplie à partir du
+ résultat d'une requête.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Vues
+
+- Créer une vue consiste simplement à donner un nom à une requête :
+
+```sql
+CREATE VIEW <name> AS <requete>;
+```
+
+- Pensez à renommer proprement vos colonnes avec des ```AS``` dans la clause
+ ```SELECT```.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Vues matérialisées
+
+- Créer une vue matérialisée :
+```sql
+CREATE MATERIALIZED VIEW <name> AS <requete>;
+```
+
+- Mettre à jour cette vue :
+```sql
+REFRESH MATERIALIZED VIEW <name>;
+```
+Une tâche de fond peut être planifiée pour mettre à jour le résultat de la vue en utilisant cette requête SQL (chaque nuit par exemple).
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Vues : modification ou suppression
+
+- Pour modifier une vue, il suffit de remplacer `CREATE` par `CREATE OR REPLACE`.
+
+```sql
+CREATE OR REPLACE VIEW <name> AS <requete>;
+```
+
+- Pour supprimer une vue :
+
+```sql
+DROP VIEW <name>;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Vues : import dans QGis
+
+- Aller dans l'onglet *Couche* > *Gestionnaire de sources de données* (Ctrl + L)
+
+<img src="assets/images/qgis_view.png" width="400">
+
+Attention, pour visualiser une vue avec QGis, il est impératif que celle-ci possède une **clé primaire**.
+
+</script></section><section data-markdown><script type="text/template">
+### Pour aller plus loin
+
+* sur [les vues](http://www.i3s.unice.fr/~rueher/Cours/BD/DocPostgresSQL9-5_HTML/rules-views.html)
+* sur [les vues matérialisées](http://www.i3s.unice.fr/~rueher/Cours/BD/DocPostgresSQL9-5_HTML/rules-materializedviews.html)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Stockage comme table
+
+- Pour créer une table à partir du résultat d'une requête :
+```sql
+CREATE TABLE <name> AS <requete>;
+```
+
+- Cela ressemble beaucoup aux vues sauf que la requête n'est calculée
+ qu'une fois pour remplir la table.
+- Si la table existe déjà :
+```sql
+INSERT INTO <name> (col1, col2, ...) <requete>;
+```
+- Dupliquer des données n'est généralement pas une bonne idée, sauf
+ dans une table temporaire.
+
+</script></section><section data-markdown><script type="text/template">
+#### Les colonnes générées stockées
+PostgreSQL 12 a introduit les colonnes calculées:
+
+- fonctionne comme une vue mais pour des colonnes
+- le calcul des valeurs d'une colonne est réalisé à partir du contenu d'autres colonnes de la même table
+- la valeur calculée est stockée sur disque.
+
+</script></section><section data-markdown><script type="text/template">
+###### Je crée une table rectangle
+```sql
+CREATE TABLE rectangle
+(
+longueur real,
+ largeur real,
+ surface real GENERATED ALWAYS AS (longueur*largeur) STORED
+);
+
+```
+###### J'ajoute des valeurs
+```sql
+INSERT INTO rectangle (longueur, largeur) VALUES (10, 20);
+```
+
+###### Je vérifie que les valeurs ont bien été calculées pour `surface`
+
+```sql
+SELECT * FROM rectangle;
+```
+
+|longueur| largeur | surface
+|----------|:-------------:|:-------------:|
+|10|20 |200|
+
+
+</script></section><section data-markdown><script type="text/template">
+### Pratique
+
+#### Affichage de requêtes dans QGIS
+
+**Exercice 3 : Structuration de données**
+
+- 3.4 Créer et afficher des vues dans QGIS
+
+
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Optimisation des requêtes
+
+<iframe src="https://giphy.com/embed/l1KtYs7ZpeBskCQus" width="480" height="208" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Index
+
+- Un index est une structure de données annexe construite pour
+ faciliter l'accès aux données.
+
+- On choisit de construire un index pour accélérer un certain type de
+ requête bien identifiée. Lorsqu'une requête est récurrente, on crée
+ un index sur le critère de recherche.
+
+- L'accès par index est généralement en temps constant alors que
+ l'accès direct à la table est en temps linéaire.
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Création d'index
+
+- On peut construire un index sur une simple colonne, sur un ensemble de
+ colonnes ou sur une expression :
+
+```sql
+CREATE INDEX my_index
+    ON my_table (Column1, Column2, ..);
+```
+
+- Les index ```B-tree``` sont destinés aux types scalaires (nombre ou chaine de caractères). Les ```GiST``` et ```GIN```
+ permettent de créer des index personnalisés.
+
+- Par défaut, la commande ```CREATE INDEX``` va créer un index B-tree.
+
+- Des index sont créés implicitement pour les clés primaires et les clés étrangères.
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Création d'index
+
+Un index peut être vu comme un annuaire téléphonique :
+
+```sql
+CREATE INDEX idx_annuaire
+    ON adresses (departement, ville, nom, prenom);
+```
+
+qui est différent de :
+
+```sql
+CREATE INDEX idx_annuaire_nom
+    ON adresses (departement, nom, prenom, ville);
+```
+
+dans lequel vous devriez commencer par rechercher le nom et le prénom de la personne
+puis filtrer les doublons par ville.
+
+</script></section><section data-markdown><script type="text/template">
+
+* Pour le moteur SQL ce n'est pas la même chose. Si vous lui demandez de lister toutes les personnes de la ville NANTES ayant le nom DURAND, il va utiliser `idx_annuaire`, filtrer sur la ville NANTES, puis sur le nom DURAND, ignorer le prénom et sortir l'ensemble des lignes communes à cette ville et ce prénom. Il lui est impossible d'utiliser `idx_annuaire_nom` pour cette tâche.
+* Et, si vous lui demandez toutes les personnes dont le prénom est Pierre, il n'utilisera ni `idx_annuaire` ni `idx_annuaire_nom`. Aucun de ces deux index ne lui permet de commencer par filtrer sur les prénoms.
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Création d'index
+
+**A retenir** :
+* Un index sur **(col1, col2, col3)** rend inutile un index sur **(col1, col2)** et un index sur **(col1)**.
+*Je n'ai pas besoin d'un deuxième annuaire contenant l'ensemble des numéros de téléphone du département par ville, je l'ai déjà avec l'annuaire de l'ensemble des numéros des département, par ville, nom et prénom.*
+* Un index sur **(col1, col2)** est différent d'un index sur **(col2, col1)**.
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Les principaux types d'index
+
+|Index|Utilisation| Type de données
+|----------|:-------------:|:-------------:|
+|B-tree | Pour des comparaisons : <, <=, =, >=, >, ```BETWEEN```, ```IN```|Chiffres, lettres, dates
+|R-tree |Divise les données en rectangles, et sous-rectangles, et sous-sous-rectangles, etc |Types de données geospatiales en deux dimensions
+|Hash| Comparaison avec =|Chiffres, lettres, dates
+|GiN| Recherche en full text| Types JSONB et tableaux|
+|GiST| Implémentation du R-tree mais plus robuste|Données géospatiales et la recherche en full text|
+
+```sql
+CREATE INDEX name ON table USING btree(att1, att2);
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Index spatiaux
+
+- Les index géométriques de PostGIS sont basés par défaut sur GIST (*Generalized Search Tree*).
+
+- Dans le cas des données spatiales, seules les emprises (bounding box) sont indexées.
+
+- Typiquement, un client cartographique utilisera l'index de clé primaire quand il accède aux attributs d'un objet particulier et l'index géographique pour retrouver les objets compris dans la zone d'affichage (l'emprise affichée).
+
+ ![](assets/images/index_spatial.png)
+
+ Source : [Workshop Foss4G](http://postgis.fr/chrome/site/docs/workshop-foss4g/doc/indexing.html)
+
+</script></section><section data-markdown><script type="text/template">
+
+##### Index spatiaux
+
+- Essentiels pour les jointures spatiales !
+
+La plupart des fonctions utilisées par PostGIS (`ST_Contains`, `ST_Intersects`, `ST_DWithin`, etc)
+prennent en compte les index automatiquement (s'ils existent dans le champ de geometrie).
+
+- Création d'un index spatial :
+
+```sql
+CREATE INDEX nom_table_gist
+ON nom_table USING GIST (geom)
+```
+ </script></section><section data-markdown><script type="text/template">
+##### Index spatiaux
+
+ Voici la requête pour lister l'ensemble des index du schéma public :
+
+```sql
+SELECT
+    tablename,
+    indexname,
+    indexdef
+FROM
+    pg_indexes
+WHERE
+    schemaname = 'public'
+ORDER BY
+    tablename,
+    indexname;
+```
+
+ </script></section><section data-markdown><script type="text/template">
+#### Optimisation : détecter les requêtes coûteuses
+
+Le premier outil à disposition est le log des requêtes lentes.
+Il faut éditer le fichier `postgresql.conf`, rechercher cette ligne:
+```
+#log_min_duration_statement = -1
+```
+et la remplacer par
+```
+log_min_duration_statement = 2000
+```
+Ce qui indique de loger les requêtes qui mettent plus de deux secondes à s'exécuter.
+Ce sera une bonne piste de départ.
+
+Deux modules complémentaires peuvent s'avérer utiles [auto_explain](https://www.postgresql.org/docs/9.5/auto-explain.html) et [pg_stat_statements](https://www.postgresql.org/docs/9.5/pgstatstatements.html).
+
+</script></section><section data-markdown><script type="text/template">
+La sortie de l'optimiseur obtenue à l'aide de l'instruction __EXPLAIN ANALYZE__ est un bon moyen de comprendre comment Postgres exécute les requêtes.
+
+```sql
+EXPLAIN ANALYZE SELECT *
+FROM parcelle
+WHERE ST_Within(geom, ST_Transform(St_GeomFromText
+('POLYGON((2.232 48.818, 2.246 48.82, 2.241 48.809, 2.232 48.818))'
+, 4326), 27572))
+;
+```
+</script></section><section data-markdown><script type="text/template">
+- Plan de requête
+
+ ![](assets/images/query_plan.png)
+ </script></section><section data-markdown><script type="text/template">
+Afin de rendre la sortie texte du QUERY PLAN plus explicite, il existe des services web qui permettent de copier/coller ces sorties et qui les transforment en schémas graphiques.
+
+- En voici quelques un :
+	- https://explain.depesz.com/
+	- https://explain.dalibo.com/
+
+ </script></section><section data-markdown><script type="text/template">
+ ![](assets/images/explaindalibo.png)
+
+</script></section><section data-markdown><script type="text/template">
+#### Optimisation : contrôler l'usage réel des index
+
+Le catalogue fournit deux vues qu'on ne manquera pas de consulter:
+* `pg_stat_user_indexes` : si certains index ne sont jamais utilisés, doit-on les garder ?
+* `pg_stat_user_tables` : si certaines tables sont trop scannées (voir leur `seq_scan`), il leur manque sans doute des index.
+
+Les index sont utiles pour **améliorer la vitesse d'exécution des requêtes** mais ils ont un **coût non négligeable en terme d'espace disque** (et de temps d'insertion/modification). Il est important de supprimer ceux qui ne sont pas utilisés.
+
+  </script></section><section data-markdown><script type="text/template">
+#### Optimisation : gérer le cache
+
+- [Présentation du `shared_buffer`](https://easyteam.fr/postgresql-tout-savoir-sur-le-shared_buffer/)
+- [Aller plus loin](https://madusudanan.com/blog/understanding-postgres-caching-in-depth/)
+
+</script></section><section data-markdown><script type="text/template">
+### Pratique
+
+#### Optimisation des requêtes
+
+**Exercice 3 : Structuration de données**
+
+- 3.5 Index géométriques
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Entretien de la base de données
+<iframe src="https://giphy.com/embed/RNDdIRbOM7hKH9ezKz" width="480" height="204" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+</script></section><section data-markdown><script type="text/template">
+
+#### VACUUM
+
+- Le stockage des données sur disque est paginé. Après de nombreux
+ ```INSERT```/ ``` DELETE```, les pages ne sont plus contiguës et l'accès est moins
+ efficace.
+- ```VACUUM``` est l'opération qui remet de l'ordre dans le stockage
+ physique.
+- L'option ```ANALYZE``` met en même temps à jour les statistiques de
+ __l'optimiseur__ de requêtes.
+</script></section><section data-markdown><script type="text/template">
+- Analyser l'indexation
+  - VACUUM : récupère l'espace inutilisé issu de la suppression
+ d'enregistrements
+  - ANALYZE : statistiques pour l'optimiseur de requêtes PostGreSQL
+
+On peut réaliser les deux dans la même commande:
+
+```sql
+VACUUM ANALYZE VERBOSE parcelle;
+```
+
+ou depuis la version 11.5 de PostgreSQL :
+
+```sql
+VACUUM VERBOSE ANALYZE parcelle;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+
+
+
+#### Déconnecter une base de données
+
+Il se peut que l'on ait besoin de forcer la déconnection d'une base de données ainsi que ses utilisateurs. Dans ce cas là, il faut se positionner dans une autre base de données et lancer cette commande : 
+
+```sql
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'NOM_DB' 
+  AND pid <> pg_backend_pid();
+```
+Cette commande permet de tuer un processus serveur. 
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Données raster
+
+![](assets/images/vector_raster.jpg)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### La gestion de raster dans PostGIS
+
+- Depuis la version 2.0, PostGIS peut associer un ensemble de cellules
+ raster à un enregistrement grâce au type de données raster.
+
+- Ce type de données est associés à diverses fonctions de gestions
+ mais aussi à de puissantes fonctions d'analyse raster-vecteur.
+
+- Raster2pgsql est l'utilitaire fourni dans PostGIS pour importer un jeu de données raster dans Postgres.
+
+- Le stockage du raster dans la base accentue encore les problèmes de
+ performance et de consommation de ressources système.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### La gestion de raster dans PostGIS
+
+- Possibilité de « draper » des données sur un Modèle Numérique.
+ de Terrain (__MNT__).
+- Possibilité de tuiler (et indexer) les dalles.
+- Supporte tous les formats gérés par __GDAL__.
+
+![](assets/images/mnt.png)
+</script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### SQL avancé
+
+**Exercices 4 : Rasters**
+
+- 4.1 Analyse spatiale raster-vecteur
+- 4.2 Altitude moyenne
+- 4.3 (BONUS) Draper une ligne sur le MNT
+- 4.4 (BONUS) Profil altimétrique
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Validité géométrique
+
+<img src="assets/images/geometrie_invalides2.png" width="450">
+
+[Source : gis.stackovernet]( https://gis.stackovernet.com/fr/q/34051)
+</script></section><section data-markdown><script type="text/template">
+#### Les géométries invalides
+
+Une géométrie invalide est l'une des causes les plus courantes de l'échec de requêtes spatiales.
+
+* Seuls les polygones peuvent être invalides.
+* Quelques règles de validation:
+   - Les contours doivent être fermés
+   - Les contours ne doivent pas s'autointersecter
+
+Ces règles sont importantes car les algorithmes de calcul dépendent de la structure et la cohérence géométrique de ces polygones.
+</script></section><section data-markdown><script type="text/template">
+#### Les géométries invalides
+- Voici un polygone en forme de 8
+
+<img style="left" src="assets/images/polygone_invalide.png" alt="drawing" width="100"/>
+
+
+- Essayons de calculer son aire :
+
+```sql
+SELECT ST_Area(ST_GeometryFromText
+('POLYGON((0 0, 0 1, 1 1, 2 1, 2 2, 1 2, 1 1, 1 0, 0 0))')) as aire;
+```
+
+Résultat :
+
+|aire|
+|----------|
+|0|
+
+Les aires qui sont calculées pour chaque carré s'annulent.
+
+</script></section><section data-markdown><script type="text/template">
+#### Détecter les géométries invalides
+
+
+- ```ST_Area() ``` peut retourner une valeur égale à 0 !
+- ```ST_IsValid(geom)``` renvoie un booléen
+- ```ST_IsValidReason(geom)``` renvoie la cause de l’invalidité.
+- ```ST_IsValidDetail(geom, integer flags)``` rapport détaillé des géométries valides/invalides.
+
+Les principales erreurs de géométries:
+![](assets/images/geometriesinvalides.png)
+</script></section><section data-markdown><script type="text/template">
+
+<img  src="assets/images/geometriesinvalides.png" alt="drawing" width="300"/>
+
+|Type d'erreur|Définition|
+|----------|:-------------:|
+|Hole Outside Shell|Trou extérieur à l'enveloppes||
+|Nested Holes|Trou imbriqué|
+|Disconnected Interior|Le trou touche le polygone en plus de 1 point|
+|Self Intersection|Auto-intersection|
+|Ring Self Intersection|Anneau auto-intersectant avec réduction de l'anneau en un point|
+|Nested shell|Polygones imbriqués|
+
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Gérer les géométries invalides
+
+- Correction automatique (résultats aléatoires):
+   - __St_Makevalid__ tente de réparer les géométries avec les cas d'invalidités les plus fréquents (auto-intersection, trous invalides)
+   - __ST_Buffer(geom,0)__ crée une zone tampon nulle pour reconstruire les géométries
+- Correction manuelle avec un logiciel SIG (si motivé)
+
+</script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### Problèmes géométriques
+**Exercice 5 : Opérations géométriques complexes**
+
+- 5.1 Détection d'anomalies
+- 5.2 Détection des polygones multiples
+- 5.3 Détection de chevauchement
+- 5.4 (BONUS) Détection des bâtiments juxtaposés
+- 5.5 (BONUS) Correction automatique les géométries invalides
+
+</script></section><section data-markdown><script type="text/template">
+#### Pour aller plus loin
+
+Pour en savoir plus :
+- Workshop Foss4g : [Validity](http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/validity.html)
+- Sigterritoires : [Corriger la géométrie d'une table](https://www.sigterritoires.fr/index.php/corriger-la-geometrie-dune-table-postgis/)
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL avancé
+
+### Topologie
+<img src="assets/images/topologicalmap.jpeg" width="450">
+
+👉 Tweet : https://twitter.com/tillnm/status/1269576945999785984
+</script></section><section data-markdown><script type="text/template">
+
+#### La topologie en quelques mots
+
+- Traite des notions de continuité et de voisinage
+- En SIG permet de vérifier la cohérence géométrique entre plusieurs objets d'une même couche d'information
+
+- Avec le type geometry, chaque forme est indépendante des autres. Cela
+ peut mener à des incohérences spatiales au niveau de la table.
+
+ </script></section><section data-markdown><script type="text/template">
+
+#### La topologie dans PostGIS
+
+Passage d'un ensemble de géométries à un **graphe** (composé de noeuds et d'arcs)
+
+![](assets/images/geom_topologies.png)
+
+* Gains en taille mémoire
+* Vérification de la cohérence facilitée
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### La topologie dans PostGIS
+
+- Le support des topologies est fournie par l'extension
+  `postgis_topology`.
+
+- Le principe est de stocker l'information géographique au niveau de la
+ couche topologique grâce aux primitives __nodes__, __edges__ et __faces__.
+
+- Dans les tables, les formes sont alors de type __topogeometry__ et ne sont
+ que l'agrégation de primitives topologiques.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Topologies et simplifications
+
+- La superposition des nœuds et arcs est conservée
+<!-- ![](assets/images/topologie_ko.png)    ![](assets/images/topologie_ok.png)
+ -->
+<table><tr>
+<td> <img src="assets/images/topologie_ko.png" width="450" alt="Le scandale de Mercator"/> </td>
+<td> <img src="assets/images/topologie_ok.png" width="450" alt="Le scandale de Mercator"/> </td>
+</tr></table>
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Routing
+
+![](assets/images/isochrones.png)
+[Source : master SIGAT](https://www.sites.univ-rennes2.fr/mastersigat/Webmapping/AtelierKoumoul/pages/isochrones/index_isochrones.html) 
+
+[pgRouting](http://pgrouting.org/) est une extension de Postgis qui fournit des fonctionnalités de routage geospatial et d'analyse de réseaux.
+
+</script></section><section data-markdown><script type="text/template">	
+
+Quels sont les avantages du routage ?
+
+- Réduction des coûts de trajet
+- Gain de temps
+==> Par conséquent, réduction des émissions de CO2.
+
+</script></section><section data-markdown><script type="text/template">	
+
+`pgRouting` contient les algorithmes suivants :
+
+- All Pairs Shortest Path, Johnson’s Algorithm
+- All Pairs Shortest Path, Floyd-Warshall Algorithm
+- Shortest Path Dijkstra
+- Shortest Path A*
+- Bi-directional Dijkstra Shortest Path
+- Bi-directional A* Shortest Path
+- Driving Distance
+- K-Dijkstra, One to Many Shortest Path
+- K-Shortest Path, Multiple Alternative Paths
+- Traveling Sales Person
+- Turn Restriction Shortest Path (TRSP)
+
+
+</script></section><section data-markdown><script type="text/template">	
+
+Plus de détails sur ces fonctions dans cette [documentation](http://www.postgis.fr/chrome/site/docs/workshop-routing-foss4g/docs/pgRoutingWorkshop.pdf).
+
+Ces algorithmes vont nous permettre de réaliser des **calculs de distance**,  des **analyses de plus court chemin** et des **calculs d'isochrones**.
+
+* Exemples de mise en application :
+    * *[Find your way with the power of PostGIS & pgRouting](https://blog.daftcode.pl/find-your-way-with-the-power-of-postgis-pgrouting-66d620ef201b)*
+    * *[Temps moyen d’accès à la gare SNCF de Rennes](https://diouck.wordpress.com/postgispgrouting/)*
+
+</script></section><section data-markdown><script type="text/template">
+#### Pratique 
+
+**Exercices 6 : Topologie et Routing** 
+
+- 6.1 Import de shapefile avec Shp2pgsql
+- 6.2 Création de la topologie du réseau
+- 6.3 Routing - Calcul des temps distance pour différents modes de transport
+- 6.4 Routing - Calcul de plus court chemin (BONUS)
+- 6.5 Routing - Calcul de plus chemins multiples (BONUS)
+
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Gestion des utilisateurs
+
+<img src="assets/images/gestionutilisateur.png" width="500">
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Rôles, droits et privilèges
+
+- Une fois connecté, PostgreSQL s'appuie sur les concepts de ```rôles```, de
+ ```droits``` et de ```privilèges```.
+- Un rôle peut être un utilisateur ou un groupe.
+
+![](assets/images/roles.png)
+Source : [ENSG](http://cours-fad-public.ensg.eu/mod/imscp/view.php?id=701)
+
+</script></section><section data-markdown><script type="text/template">
+
+- Un rôle est un ```ensemble de droits et de privilèges```.
+- Un rôle peut hériter d'un autre rôle.
+- Les droits sont définis pour chaque objet.
+- Le propriétaire d'un objet a tous les droits dessus.
+- Les privilèges sont ```SUPERUSER```, ```CREATEDB```, ```CREATEROLE```, ```CREATEUSER```, ```LOGIN```
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Rôles, droits et privilèges
+
+- Pour qu'un utilisateur ait tous les droits sur une table :
+```sql
+ALTER TABLE <table> OWNER TO <role> ;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Attribution des droits
+
+A retenir :
+**seul le super utilisateur est capable de gérer les utilisateurs dans pgadmin**.
+Avec des connexions de moindre niveau vous n'aurez plus la possibilité de créer ou modifier les utilisateurs et groupes.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Attribution des droits
+
+- On attribue les droits grâce à ```GRANT``` et ```REVOKE```.
+
+```sql
+-- Création d'un super-utilisateur
+-- (SUPERUSER implique CREATEDB et CREATEROLE)
+CREATE ROLE admin LOGIN SUPERUSER;
+-- Il faut avoir le droit SUPERUSER pour créer un
+-- nouveau superutilisateur.
+
+-- Création d'un groupe
+CREATE ROLE gisreader;
+-- Un rôle disposant du droit CREATEROLE peut aussi
+-- modifier et supprimer d'autres rôles, ainsi que
+-- donner ou supprimer l'appartenance à ces rôles.
+```
+</script></section><section data-markdown><script type="text/template">
+```sql
+-- Création d'un utilisateur appartenant à un groupe
+CREATE ROLE martin LOGIN;
+GRANT gisreader TO martin;
+
+-- Attribution de privilège à un groupe
+REVOKE SELECT ON <table> FROM public;
+GRANT SELECT ON <table> TO gisreader;
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Avec PgAdmin
+
+- Attention à la date de validité attribuée automatiquement par
+ PgAdmin !
+ </script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### Gestion des droits
+
+**Exercice 7 : Administration Postgres**
+
+- 7.1 Gestion des droits
+</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Import/Export des données
+<img src="assets/images/import_export.jpg" width="300">
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Lecture et écriture au format CSV
+
+- La commande __COPY__ permet d'importer et d'exporter des données depuis
+ des fichiers CSV.
+- Import :
+```sql
+COPY parcelle (id_parcelle, insee, id_section)
+FROM '/tmp/fichier.csv' WITH DELIMITER ',' CSV HEADER;
+```
+- Export :
+```sql
+COPY (SELECT * FROM parcelle)
+TO '/tmp/fichier.csv' WITH DELIMITER ',' CSV HEADER;
+```
+- Requiert le droit __SUPERUSER__.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### ogr2ogr
+
+- Le programme ```ogr2ogr``` est le __couteau suisse__ de l'intégrateur de
+ données spatiales.
+- Plus de __20 formats vectoriels__ supportés.
+- Utilitaire en mode console.
+- Fonctionne en mode __ETL__ : lit une source de données, enchaîne
+ filtres et transformations, écrit dans le format cible.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### ogr2ogr
+
+- Export d'une table PostGIS vers un ShapeFile avec filtrage
+ attributaire, filtrage sur l'emprise et reprojection :
+- Requiert privilège SUPERUSER.
+
+```bash
+export PGCLIENTENCODING="LATIN1"
+ogr2ogr
+   -f "ESRI Shapefile" sortie.shp
+   PG:"host=... user=... dbname=... password=..." table
+   -t_srs EPSG:2154
+   -where "cde_dep = 11"
+   -spat 548976, 1704978, 802810, 1996720
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### shp2pgsql
+
+- Le programme ```shp2pgsql``` est fourni avec PostGIS.
+- Il est fait pour charger des ShapeFile dans PostGIS.
+- L'option ```-W``` spécifie l'encodage d'entrée.
+- L'option ```-I``` ajoute un index géométrique.
+- L'option ```-s <srid>``` indique le système de coordonnées.
+
+```bash
+shp2pgsql -I -W LATIN1 shapefiles-rge/batiment.shp batiment
+| psql -d formation -U user -h localhost
+```
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### raster2pgsql
+
+- Le programme ```raster2pgsql``` est fourni avec PostGIS.
+- Il est fait pour charger des rasters dans PostGIS.
+- L'option ```-I``` ajoute un index géométrique.
+- L'option ```-C``` ajoute les contraintes du raster.
+- L'option ```-M``` nettoie la table (VACUUM ANALYZE).
+- L'option ```-s <srid>``` indique le système de coordonnées.
+```bash
+raster2pgsql -s 27572 -I -C -M srtm-27572.tif srtm
+| psql -d formation -U user -h localhost
+```
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Outils graphiques
+
+- Une partie des fonctionnalités OGR sont accessibles dans des SIG
+ comme QGIS.
+
+- ```shp2pgsql``` et ```pgsql2shp``` sont disponibles en tant que plugins dans
+ pgAdmin4.
+
+- L'ETL spatial FME de Safe software est assez courant et facile à
+ utiliser.
+
+- L'ETL Talend propose l'extension spatiale Spatial Data Integrator
+ (SDI).
+
+
+</script></section><section data-markdown><script type="text/template">
+### Pratique
+
+#### Import et export
+
+**Exercice 7 : Administration Postgres**
+
+- 7.2 Import et export de CSV
+- 7.3 Import et export avec Ogr2ogr, shp2pgsql et raster2pgsql
+</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Mise à jour
+
+</script></section><section data-markdown><script type="text/template">
+
+### Mises à jour
+
+- Avant de faire une mise à jour de PostgreSQL ou PostGIS, __faîtes
+ toujours une sauvegarde__ de vos bases de données.
+- Notez que les mises à jour de PostGIS ne modifient jamais vos bases
+ de données, seulement les bibliothèques et scripts d'installation.
+- PostGIS propose des outils de __soft upgrade__ (mise à jour de PostGIS
+ dans une base existante).
+- Lorsque le soft upgrade échoue, le __hard upgrade__ consiste à migrer
+ les données vers une nouvelle base.
+
+</script></section><section data-markdown><script type="text/template">
+
+### Procédure de « soft upgrade »
+
+- Vous pouvez utiliser la commande :
+```sql
+ALTER EXTENSION postgis UPDATE TO '3.0.2' ;
+```
+- Si le soft upgrade n'est pas possible, la procédure échouera avec un
+ message d'erreur (sans rien modifier).
+</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Configuration du serveur
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Fichiers de configuration
+
+- La configuration de PostgreSQL est définie au niveau du ```cluster```.
+- Un ```cluster``` est un espace de stockage (contenant plusieurs bases)
+ associé à une instance du serveur.
+- A la racine du ```cluster``` se trouvent les fichiers :
+  - __postgresql.conf__ pour la configuration du serveur PostgreSQL
+  - __pg_hba.conf__ et __pg_ident.conf__ pour la gestion des utilisateurs
+- On peut aussi créer plusieurs __tablespace__ pour répartir le stockage
+ (*optimisation*).
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Fichier postgresql.conf
+
+- Dans le fichier __postgresql.conf__, la plupart des options sont
+ réservées à un usage avancé et concernent l'optimisation du serveur
+ pour un usage particulier.
+ 
+- La section « connections and authentification » inclut :
+  - ```listen_addresses``` qui définit les adresses depuis lesquelles on
+ accepte les connexions. Par défaut : '*' (le serveur écoute tout).
+  - ```port``` qui définit le port sur lequel le service attend les connexions
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Gestion des connexions
+
+- La gestion de l'authentification est gérée dans __pg_hba.conf__, elle
+ combine nom d'utilisateur et hôte de connection.
+ 
+ Ce fichier est présent dans le répertoire initialisé avec l'instance postgres.
+ 
+- Les principales méthodes d'authentification sont ```ident```, ```md5``` et ```trust```
+ :
+  - ```ident``` s'appuie sur les utilisateurs du système,
+  - ```md5``` utilise le cryptage du mot de passe,
+  - ```trust``` désactive l'authentification (déconseillé).
+ 
+ </script></section><section data-markdown><script type="text/template">
+ 
+- Il existe d'autres méthodes d'authentification pour exploiter les
+ infrastructures disponibles sur le réseau.
+ 
+**Attention, n'oubliez pas de redémarrer PostgreSQL quand vous modifiez le pg_hba.conf !**
+
+ </script></section><section data-markdown><script type="text/template">
+#### Quelques modes d'authentification
+
+- Permettre à n'importe quel utilisateur du système local de se connecter à la base de donnée sous n'importe quel nom d'utilisateur :
+
+
+| TYPE| DATABASE|USER|ADDRESS|METHOD|
+|----------|:-------------:|------:|------:|------:|
+|local|all|all||trust|
+
+- La même chose en utilisant les connexions TCP/IP locales loopback en utilisant une authentification par mot de passe :
+
+
+| TYPE| DATABASE|USER|ADDRESS|METHOD|
+|----------|:-------------:|------:|------:|------:|
+|local|all|all|127.0.0.1/32|md5|
+
+ </script></section><section data-markdown><script type="text/template">
+
+- La même chose en utilisant le nom d'hôte avec l'authentifiaction par mot de passe:
+
+
+| TYPE| DATABASE|USER|ADDRESS|METHOD|
+|----------|:-------------:|------:|------:|------:|
+|local|all|all|localhost|md5|
+
+- N'autorise les utilisateurs locaux qu'à se connecter à leur propre base de donnée (base ayant le même nom que leur nom d'utilisateur) exception faite des administrateurs et des membres du rôle "support" qui peuvent se connecter à toutes les bases de données:
+
+
+| TYPE| DATABASE|USER|ADDRESS|METHOD|
+|----------|:-------------:|------:|------:|------:|
+|local|sameuser|all||md5|
+|local|all|@admins,+support||md5|
+
+
+[ Pour en savoir plus]( https://docs.postgresql.fr/10/client-authentication.html)
+
+ </script></section><section data-markdown><script type="text/template">
+
+
+Une autre tactique possible est d'ouvrir les droits de connexion aux utilisateurs dans le fichier pg_hba.conf et de contrôler plus finement la gestion des droits d'accès par base dans la gestion des droits et rôles de PostgreSQL. Cela a l'avantage d'éviter de solliciter trop souvent l'administrateur système et de reporter la gestion des droits courants (autre que le filtrage d'IP) sur l'administrateur des bases de données.
+
+Pour autant cette méthode n'est **pas toujours souhaitable** car, l'utilisateur même sans avoir les droits des bases, pourra quand même parcourir l'aborescence des bases.</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Notion de service
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Notion de service
+
+- PostgreSQL doit être vu comme un service :
+  - il est en veille permanente,
+  - il gère la réception des requêtes, leur traitement et l'envoi des
+ réponses.
+ 
+- Par défaut, PostgreSQL est lancé automatiquement au démarrage.
+
+- On peut contrôler le service PostgreSQL par l'interface de gestion
+ des services, permettant notamment de désactiver le démarrage
+ automatique.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Gestionnaire de service
+
+![](assets/images/services_windows.png)</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Sauvegarde et restauration
+
+<img src="assets/images/postgresql-db-backup.jpg" width="400">
+</script></section><section data-markdown><script type="text/template">
+
+#### Outils standards
+
+- PostgreSQL est « livré » en standard avec :
+  - ```pg_dump``` (sauvegarde d'une base de données),
+  - ```pg_dumpall``` (sauvegarde du cluster complet),
+  - ```pg_restore``` (restauration).
+
+- Les deux processus sont largement configurables.
+
+- Il s'agit de programme en mode console.
+
+- PgAdmin4 offre une interface graphique convenable.
+
+- Restauration sur crash possible (snapshot+WAL)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Options
+
+- Format ```plain``` pour générer un script SQL, sinon format ```custom```.
+- Exporter les « blobs » (binary large objects) pour les bases géographiques.
+- Dans le cas d'un export, désactiver les options « Propriétaire »
+ et « Droits ».
+- Pensez à faire des sauvegardes au niveau cluster pour conserver la
+ définition des utilisateurs.
+
+[ Pour aller plus loin ](https://wiki.postgresql.org/wiki/Automated_Backup_on_Linux)
+
+</script></section><section data-markdown><script type="text/template">
+
+
+### Pratique
+
+#### Sauvegarde et restauration
+
+**Exercice 7 : Sauvegarde et restauration**
+
+- 7.4 Sauvegarde et restauration
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Administration PostgreSQL
+
+### Synchronisation et réplication
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Objectif
+
+- __High-availability__ : minimiser le temps de reprise en cas de panne.
+
+- __Load-balancing__ : répartir la charge pour améliorer les temps de
+ réponse.
+ 
+- Idéalement, la solution de réplication est transparente pour
+ l'utilisateur.
+ 
+- Idéalement, la solution n'a pas d'impact négatif sur la performance.
+
+- L'idéal n'existe pas.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Solutions
+
+- Quelques solutions :
+  - cluster partagé,
+  - cluster répliqué,
+  - système maître-esclave,
+  - réplication des transactions (flux),
+  - OS.
+  
+- Chaque solution a des avantages et des inconvénients.
+
+- Mêmes versions, même stockage binaire (32/64bits)
+
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL très avancé
+
+### Triggers et fonctions
+
+<img src="assets/images/triggerpostgres.jpg" width="700">
+</script></section><section data-markdown><script type="text/template">
+
+#### Fonctions
+
+- PostgreSQL supporte plusieurs langages pour écrire des fonctions
+ personnalisée : SQL, C, PL/PgSQL, Python, Perl, …
+- A priori, tout est permis.
+- Attention à la gestion de la mémoire !
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Présentation de la syntaxe d'une fonction PL/PgSQL
+
+```sql
+-- nom de la fonction
+CREATE FUNCTION nomfonction(varchar, integer)
+-- type de retour spécial trigger
+RETURNS trigger AS $$
+-- résultat de la fonction
+RETURNS integer AS $$
+-- declaration des variables
+DECLARE
+-- code de la fonction
+BEGIN
+-- fin du code de la fonction
+END;
+$$ LANGUAGE plpgsql;
+```
+</script></section><section data-markdown><script type="text/template">
+
+#### Quelques mots clés à retenir de PL/PgSQL
+
+-  ```;  ```délimite la fin du code de la fonction
+-  ```:=  ``` assignation de variable.
+-  ```BEGIN … END ``` délimitent un bloc de code.
+-  ```RETURN ``` permet de retourner une valeur (s'écrit en dehors du code)
+-  ```DECLARE ``` permet de déclarer des variables locales.
+
+</script></section><section data-markdown><script type="text/template">
+
+Exemple:
+
+```sql
+CREATE FUNCTION F_ECART_JOUR(d DATE)
+RETURNS INTEGER
+AS
+$corps$
+DECLARE jour date := CURRENT_DATE;
+        nombre_jour INTEGER;
+BEGIN
+   nombre_jour := jour - d;
+   RETURN nombre_jour;
+END;
+$corps$
+LANGUAGE PLPGSQL
+```
+
+Cette fonction renvoit l'écart en nombre de jours entre une date passée et la date du jour.
+```sql
+SELECT F_ECART_JOUR(DATE('2019-07-30'))
+```
+
+*Source : [Blog developpez sqlpro](https://blog.developpez.com/sqlpro/p10060/langage-sql-norme/postgresql_syntaxe_basique_des_fonctions)*
+
+</script></section><section data-markdown><script type="text/template">
+#### Triggers
+- Un trigger est un programme qui se déclenche automatiquement à la suite d'un évènement.
+- Les triggers associent un traitement personnalisé à chaque
+ modification d'une table (ou d'une vue).
+
+- Cas fréquents d'utilisation :
+  - vérification de contraintes complexes,
+  - renseignement d'attributs calculés,
+  - propagation de modification vers d'autres tables.
+
+- Un trigger peut avoir accès à la donnée en cours d'édition (et
+ même la modifier).
+
+ /!\ Ne pas en abuser car l'inter-dépendance entre triggers peut être difficile à gérer, surtout lorsque le modèle de données est voué à évoluer.
+
+</script></section><section data-markdown><script type="text/template">
+#### Présentation de la syntaxe d'un trigger
+
+```sql
+-- nom du trigger
+CREATE [OR REPLACE] TRIGGER  nomtrigger
+-- évènements
+BEFORE|AFTER INSERT [OR]|UPDATE [OR]|DELETE
+-- nom de la table à mettre à jour
+[OF nomcolonne] ON nomtable
+-- condition d'exécution
+FOR EACH ROW | EACH STATEMENT
+EXECUTE PROCEDURE nomfonction()
+;
+```
+</script></section><section data-markdown><script type="text/template">
+#### Options des triggers
+
+- Un trigger est associé à un événement __INSERT__, __UPDATE__ ou __DELETE__.
+- Un trigger peut réagir à chaque enregistrement modifié ou à chaque
+ ordre SQL.
+- Un trigger peut réagir en amont ou en aval de la modification.
+- L'action déclenchée est décrite par une fonction.
+
+</script></section><section data-markdown><script type="text/template">
+Il peut y avoir 4 sortes de triggers possibles selon le moment (BEFORE, AFTER) et le type (instruction ou ligne).
+
+Voici un récapitulatif ce qu'il est possible de faire selon les cas d'usage :
+
+![](assets/images/triggers.png)
+
+Source : [Postgresql](https://www.postgresql.org/docs/9.1/static/sql-createtrigger.html)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Trigger BEFORE ou AFTER ?
+
+- **BEFORE** : Le trigger est déclenché avant que le changement soit effectué dans la table.
+- **AFTER** : Le trigger est déclenché après que les changements aient été effectués dans la table.
+
+</script></section><section data-markdown><script type="text/template">
+
+<img src="assets/images/trigger_before_after.png" width="400">
+
+Source : [When to use "before" vs "after" triggers](http://www.sfdc99.com/2014/01/25/use-vs-triggers/)
+
+La majorité des triggers sont des BEFORE.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Trigger ligne ou instruction?
+
+- Le trigger ligne (**FOR EACH ROW**) :
+  - Va se déclencher une fois pour chaque ligne modifiée/insérée/supprimée.
+  - Possiblité d'ajouter une condition supplémentaire **WHEN**.
+  - Notions de ligne courantes :
+     - *old* :
+         - désigne la ligne avant modification
+         - type de donnée RECORD
+         - valable pour un DELETE et un UPDATE
+     - *new*
+         -  désigne la ligne après modification
+         - type de donnée RECORD
+         - valable pour un INSERT et un UPDATE
+
+
+![](assets/images/ligne_courante_trigger.png)
+
+Source :[ Les triggers - - Licence MIAGE - Université Lille 1](http://www.fil.univ-lille1.fr/~caronc/BDD/triggersPar4.pdf)
+
+- Le trigger instruction (**FOR EACH STATEMENT**):
+  - Va se déclencher une seule fois pour toute l'instruction.
+
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Exemple de trigger
+
+```sql
+CREATE FUNCTION maj_surface() RETURNS trigger AS $$
+BEGIN
+ NEW.area := ST_Area(NEW.geom);
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER maj_surface
+BEFORE INSERT OR UPDATE ON geotable
+FOR EACH ROW EXECUTE PROCEDURE maj_surface();
+```
+
+
+</script></section><section data-markdown><script type="text/template">
+
+### Pratique
+
+#### SQL très avancé
+
+**Exercice 8 : Triggers et fonctions**
+
+- 8.1 Mise à jour de champ
+- 8.2 Fonctions et triggers
+
+  </script></section><section data-markdown><script type="text/template">
+### Pour aller plus loin:
+- [Blog sigterritoires -Postgresql et PL/pgsql: une petite initiation aux fonctions](https://www.sigterritoires.fr/index.php/postgresql-et-pl-pgsql-une-petite-initiation-aux-fonctions/)
+- [Blog developpez sqlpro](https://blog.developpez.com/sqlpro/p10060/langage-sql-norme/postgresql_syntaxe_basique_des_fonctions)
+- [Lille Université - PL/pgSQL : Instructions de base](https://archive.is/FfXNb)
+- [IGM Gaspard Monge - PL/pgSQL](http://www-igm.univ-mlv.fr/~dr/XPOSE2005/cocquet/fonctions_postgresql.html)
+- [PL/pgSQL avancé ](https://public.dalibo.com/exports/formation/manuels/modules/p2/p2.handout.html)
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL très avancé
+
+### Notion de transaction
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Systèmes multi-utilisateurs
+
+- Le traitement d'une requête n'est jamais instantané. Toute
+ opération sur la base de données a une __durée__.
+- En cas d'édition, la base peut passer dans un état __incohérent__
+ pendant le temps de ce traitement.
+- Pendant ce même temps, il est aussi possible qu'un autre utilisateur
+ cherche à modifier les mêmes données. Il y alors risque
+ d'écrasement.
+- Pour préserver l'__intégrité__ de la base, on a alors recours aux
+ __transactions__.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Caractéristiques des transactions
+
+- Une transaction est un ensemble d'opérations ayant les propriétés
+ suivantes :
+  - __Atomicité__ : une transaction ne peut pas être subdivisée, soit elle
+ a lieu jusqu'au bout soit elle n'a pas lieu,
+  - __Cohérence__ : une transaction trouve la base dans un état cohérent et
+ la laisse dans un état cohérent,
+  - __Isolation__ : les modifications engendrées par une transaction ne sont
+ pas visible par les autres utilisateurs avant la fin de la transaction,
+  - __Durabilité__ : quand la transaction termine, les modifications
+ engendrées sont définitives.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Les transactions dans PostgreSQL
+
+- Toute requête envoyée à PostgreSQL s'inscrit dans le cadre d'une
+ transaction (mais les logiciels clients peuvent gérer un mode
+ auto-commit).
+ 
+- Une transaction peut se terminer de deux manières :
+  - un __COMMIT__ confirme les modifications et les écrit dans la base,
+  - un __ROLLBACK__ annule toutes les modifications ayant été apportées
+ pendant la transaction.
+- En cas d'erreur/échec, la transaction est terminée par un __ROLLBACK__.
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Contrôle des transactions
+
+- En __SQL__, la transaction commence avec __BEGIN__ et se termine avec __COMMIT__
+ ou __ROLLBACK__ :
+```sql
+BEGIN;
+UPDATE ... ;
+DELETE ... ;
+DELETE ... ;
+COMMIT;
+```
+- Utile dans le cas de scripts pour éviter de laisser une procédure à
+ moitié terminée après une erreur.
+- Les modifications ne sont visibles par les autres utilisateurs
+ qu'après un __COMMIT__.
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Pour résumer
+
+### Les bonnes pratiques
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Serveur :
+
+- Bien configuer les ouvertures vers l'extérieur (postgresql.conf et pg_hba.conf)
+- Travailler de préférence dans d'autres schémas que "public" qui contient les tables systèmes PostGIS, les fonctions, etc. De plus, l'organisation des données en plusieurs schémas simplifie la gestion des droits d'utilisation ainsi que les procédures de restauration.
+
+
+</script></section><section data-markdown><script type="text/template">
+
+####  Sécurité :
+
+- Gestion des accès utilisateurs et des roles pour assurer l'intégrité des données
+- Dans un serveur en production, faire des sauvegardes régulièrement (au minimum), le mieux étant de mettre en place un système de réplication (à calibrer selon les besoins)
+
+</script></section><section data-markdown><script type="text/template">
+
+####  Optimisation de la base de données :
+
+- Réfléchir à l'organisation de son modèle de données avant de créer ses tables.
+- Gestion des contraintes (clés primaires/étrangères)
+- VACUUM pour récupérer l'espace disque non utilisé et ANALYSE pour récupérer l'information statistique afin d'optimiser les requêtes
+- Indexation pour les tables ayant été modifiées massivement
+- Vérifier la validitée des géométries
+- Répartir les tables volumineuses sur plusieurs tables (avantage : meilleure efficience des index)
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Optimiser les requêtes:
+
+- Utiliser des sous-requêtes plutôt que de créer de nouvelles tables
+- Ne pas utiliser de fonctions dépréciées
+- Tester plusieurs requêtes permettant d'arriver au même résultat pour évaluer leur rapidité
+
+</script></section><section data-markdown><script type="text/template">
+
+### Pour aller plus loin :
+
+- [Les supports pédagogiques de Géoinformations]( http://www.geoinformations.developpement-durable.gouv.fr/postgis-support-pedagogique-a3347.html)
+- [Cours et tutoriel sur le language SQL](https://sql.sh/)
+- [Cours Postgres avancé de l'ENSG](http://cours-fad-public.ensg.eu/course/view.php?id=129)
+- [Don't do this ](https://wiki.postgresql.org/wiki/Don%27t_Do_This)
+</script></section></section><section ><section data-markdown><script type="text/template">## SQL très avancé
+
+### Les tuiles vectorielles
+
+![](assets/images/age_batiments_tuiles_vectorielles.png)
+
+[Source](https://parallel.co.uk/netherlands/#13.8/52.365/4.9/0/40) 
+
+
+</script></section><section data-markdown><script type="text/template">
+#### Les tuiles vectorielles
+
+<img src="assets/images/tuiles.png" alt="drawing" width="300"/>
+⇒
+Ensemble d’images de 256x256 pixels
+
+- Les cartes sur le web sont aujourd’hui composées de **tuiles**. Ce sont de petits morceaux de cartes, des carrés, mis les uns à suite des autres. Initialement ces **tuiles** étaient des images bitmaps, mais elles sont progressivement remplacées par des **tuiles vectorielles**. 
+- Les **tuiles vectorielles** sont des morceaux de cartes contenant les données nécessaires à la représentation d’une zone. 
+
+</script></section><section data-markdown><script type="text/template">
+#### Caractéristiques des tuiles vectorielles
+
+* Principe de tuiles conservé
+* Données brutes vectorielles plutôt que des images précalculées
+* Propriétés des objets accessibles
+* Format binaire Protobuf
+* Rendu par le client
+
+</script></section><section data-markdown><script type="text/template">
+#### Caractéristiques des tuiles vectorielles
+
+- Pour servir ces données sous forme de tuiles vectorielles, il est nécessaire de les préparer, de les mettre à disposition via un serveur et de les afficher sur le web en leur appliquant des styles graphiques. 
+
+- Les tuiles vectorielles contiennent les géométries qui composent la carte et non plus des dessins figés de celle-ci
+
+![](assets/images/square-of-math.gif) <!-- .element height="300px"  -->
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Avantages des tuiles vectorielles
+
+* Changement de style dynamique sans avoir besoin de regénérer les tuiles
+* Un même jeu de tuiles pour différents contextes
+* Affichage des différentes propriétés d'un objet
+* Rendu possible en 3D
+
+- Exemples:
+   - [Âge des batiments aux Pays Bas ](https://parallel.co.uk/netherlands/#13.8/52.365/4.9/0/40) 
+
+   - [Clustering properties with Mapbox and HTML markers](https://labs.mapbox.com/narratives/cluster-properties/?utm_medium=blog&utm_source=mapbox-blog&utm_campaign=blog|mapbox-blog|maps|clustering-properties-with-mapbox-and-html-markers-bb353c8662ba-19-04&utm_term=maps&utm_content=clustering-properties-with-mapbox-and-html-markers-bb353c8662ba)
+
+</script></section><section data-markdown><script type="text/template">
+
+
+##### Autres avantages
+
+* Requêtes instantanées sur les objets 
+* Accès à la géométrie et aux propriétés
+* Opération géométriques sur les objets (ex : cluster, voronoï etc.)
+* Poids réduit
+* La carte peut être rendue à n'importe quelle échelle
+
+</script></section><section data-markdown><script type="text/template">
+
+#### Génération de tuiles vectorielle
+
+Il y a deux étapes pour servir des tuiles vectorielles:
+* La première est d’exécuter les requêtes SQL pour obtenir les données, puis construire les fichiers binaires de tuiles vectorielles proprement dite.
+* La seconde est de les servir au travers d’un serveur web.
+
+Il y a donc des outils qui ne font que la **production des tuiles**, d’autres qui ne font que le **service web**, et certain qui font les deux (Postile, de l’écosystème du projet OpenMapTiles, Tessera, T-Rex, Tegola)
+
+
+</script></section><section data-markdown><script type="text/template">
+
+
+#### Étapes de production de tuiles vectorielles
+
+* Données en entrée : fichiers OSM (PBF), GeoJSON ou bien une base de données Postgresql/PostGIS
+* Nettoyage des données en couches d'informations (POI, bâtiments, rivières) et on ne retient que quelques champs
+* On indique à quel(s) niveaux de zoom les tuiles vont contenir quelle(s) couche(s)
+* On sérialise le résultat dans un format MVT (binaire)
+* On prégénère les tuiles et soit :
+        - on les stocke à plat
+        - soit dans un fichier MBtiles 
+ 
+</script></section><section data-markdown><script type="text/template">
+
+#### Génération de tuiles vectorielles
+
+Le **MVT** est une succession de plusieurs couches encodées pfb.
+
+* Les MVT peuvent également être générés à l'aide de la fonction PostGIS __ST_AsMVT__.
+* Depuis Postgis 3, les performances de générations de tuiles ont été considérablement améliorées.
+* La fonction ST_AsMVT() a été rendue parallélisable de sorte qu'on peut répartir le travail sur plusieurs processeurs, accélérant ainsi la génération de tuiles avec beaucoup de géométries d'entrée.
+
+>La prise en charge des tuiles vectorielles PostGIS est devenue si bonne que même les projets avec des exigences de génération de tuiles massives, comme le projet OpenMapTiles, ont standardisé leur tuilage sur PostGIS. 
+Paul Ramsey - [Waiting for PostGIS 3: ST_AsMVT Performance](http://blog.cleverelephant.ca/2019/08/postgis-3-mvt.html) 
+
+
+
+</script></section><section data-markdown><script type="text/template">
+### Pratique 
+
+#### Génération de tuiles vectorielles
+
+- **Exercice 9 : Tuiles vectorielles** : Se reporter au PDF formation-postgis/activites/*exercices-serie-9.pdf*
+	- 9.1 Production de tuiles avec ST_AsMVT()
+
+</script></section><section data-markdown><script type="text/template">
+#### Pour aller plus loin
+
+- [Tour d'horizon des serveurs de tuiles vectorielles pour fonds de carte (Makina Corpus)](https://makina-corpus.com/blog/metier/2019/tour-d-horizon-des-serveurs-de-tuiles-vectorielle-pour-fond-de-carte) 
+- [Profil d'élévation avec des tuiles vectorielles (Makina Corpus)](https://makina-corpus.com/blog/metier/2016/profil-delevation-avec-des-tuiles-vectorielles) 
+
+</script></section></section><section ><section data-markdown><script type="text/template">## Exemple d'application
+
+### Générer de tuiles vecteur avec PostGIS et t-rex
+
+</script></section><section data-markdown><script type="text/template">
+## Présentation
+
+### Qu'est-ce que t-rex?
+
+Dans leur site: _"Create and serve your own vector tiles"_
+
+- Outil en libre accès
+- Fonctionne en ligne de commandes
+- Permet générer de _tuiles vecteur_ à partir de différentes sources de données et notamment à partir des __données stockées dans une base PostGIS__
+- Intègre plusieurs _snippets_ pour la visualisation des tuiles (`Mapbox GL JS`, `OpenLayers`)
+
+Les __tuiles vecteur__ commencent à être très utilisées dans le monde du _WebMapping_
+Une presentation introductive aux tuiles vectorielles est disponible [ici](https://mtes-mct.github.io/numerique/geek-lunch/2018/05/15/geek-lunch-Makina_Corpus.html)
+
+</script></section><section data-markdown><script type="text/template">
+### Installation
+
+t-rex est disponible au [téléchargement](https://t-rex.tileserver.ch/doc/setup/) sur:
+
+  - Ubuntu
+  - Windows
+-  Disponible aussi comme image Docker
+
+</script></section><section data-markdown><script type="text/template">
+## Mise en place de l'outil
+
+### Deux modes de fonctionnement
+
+- `t-rex` en mode **serve** permet de générer les tuiles à la volée à partir de nos données spatiales stockées dans une base PostGIS:
+
+<sub>` t_rex serve --dbconn postgresql://user:pass@localhost/dbname `<sub>
+
+- Il est également possible de prégénerer les tuiles avec **generate** :  
+
+` t_rex generate [OPTIONS] `
+
+L'option `--config <FILE>` permet d'utiliser un fichier de configuration customisé pour la génération de tuiles, et c'est dans celui-ci que se placeront les requêtes SQL.
+
+
+</script></section><section data-markdown><script type="text/template">
+### Générer et comprendre le fichier de configuration
+
+- t-rex génère une configuration par défaut à partir des données
+- Configuration en [format __.TOML__](https://github.com/toml-lang/toml)
+- Structure hiérarchisée de couches en groupes
+
+**Configuration générée par défaut à partir d'une base minimale:**
+```toml
+# t-rex configuration
+
+[service.mvt]
+viewer = true
+
+[[datasource]]
+dbconn = "postgresql://postgres:postgres@localhost/empty"
+name = "dbconn"
+default = true
+
+[grid]
+# Predefined grids: web_mercator, wgs84
+predefined = "web_mercator"
+
+[[tileset]]
+name = "empty"
+#extent = [-180.0,-90.0,180.0,90.0]
+[[tileset.layer]]
+name = "empty"
+table_name = "empty"
+geometry_field = "geom"
+geometry_type = "POINT"
+srid = 4326
+#fid_field = "id"
+#tile_size = "4096"
+buffer_size = 0
+query_limit = 1000
+#[[tileset.layer.query]]
+#sql = """SELECT ST_Transform(geom,3857) AS geom,"id" FROM empty WHERE geom && !bbox!"""
+
+#[cache.file]
+#base = "/tmp/mvtcache"
+#baseurl = "http://example.com/tiles"
+
+[webserver]
+# Bind address. Use 0.0.0.0 to listen on all adresses.
+bind = "127.0.0.1"
+port = 6767
+threads = 4
+#cache_control_max_age = 43200
+```
+
+</script></section><section data-markdown><script type="text/template">
+### Personnaliser la configuration
+
+Il est possible de **modifier la configuration générée par défaut par `t-rex`** pour l'adapter à nos besoins, comme:
+- Simplification de géometries
+- Affichage sélectif d'objets
+- Sélectionner des objects selon le niveau de zoom, prennant comme référence une valeur de ses attributs: routes principales, secondaires, chemins...
+- Application d'un style (support experimental pour `Mapbox GL JS`)
+
+</script></section><section data-markdown><script type="text/template">
+Pour l'écriture de la requête, on peut se servir de **variables** :
+ - ```!bbox!```
+ - ```!zoom!```
+ - ```!scale_denominator!```
+ - ```!pixel_width!```
+
+</script></section><section data-markdown><script type="text/template">
+### Exemple de requêtes SQL
+
+Les requêtes SQL se construisent au niveau du _layer_:
+```toml
+[[tileset.layer.query]]
+  minzoom = 0
+  sql = """
+    SELECT name, type, 0 as osm_id, ST_Union(geometry) AS geometry
+    FROM osm_buildings_gen0
+    WHERE geometry && !bbox!
+    GROUP BY name, type
+    ORDER BY sum(area) DESC"""
+[[tileset.layer.query]]
+  minzoom = 17
+  maxzoom = 22
+  sql = """
+    SELECT name, type, osm_id, geometry
+    FROM osm_buildings
+    WHERE geometry && !bbox!
+    ORDER BY area DESC"""
+```</script></section></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"transition":"slide"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
