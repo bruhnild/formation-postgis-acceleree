@@ -1,1 +1,1 @@
-# formation_postgis_acceleree
+# formation-postgis-acceleree
